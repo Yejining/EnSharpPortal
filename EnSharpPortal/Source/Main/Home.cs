@@ -35,13 +35,14 @@ namespace EnSharpPortal.Source.Main
         public void RunPortalWithoutLogIn()
         {
             // 데이터 로드(시간표)
-            dataManager.LoadData();
+            //dataManager.LoadData();
+            Console.WriteLine("선택  NO    개설학과전공   학수번호  분반       교과목명        이수구분  학년  학점        요일 및 강의시간          강의실       교수명        강의언어");
+            Console.WriteLine(" ▷  100  디지털콘텐츠학과  009101   001  Capstone디자인(산...  전공필수   4    4.0  화목16:30-18:00,목18:00-20:00  율401/동401  Muhammad(1)...   한국어");
+            
+            //print.UserVersionMenu();
+            //WaitUntilGetEnterKey();
 
-            print.UserVersionMenu();
-            WaitUntilGetEnterKey();
 
-            List<ClassVO> classes = dataManager.Classes;
-            foreach (ClassVO lecture in classes) Console.WriteLine(lecture.ToString());
         }
 
         /// <summary>
