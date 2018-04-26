@@ -36,13 +36,27 @@ namespace EnSharpPortal.Source.Main
         {
             // 데이터 로드(시간표)
             //dataManager.LoadData();
-            Console.WriteLine("선택  NO    개설학과전공   학수번호  분반       교과목명        이수구분  학년  학점        요일 및 강의시간          강의실       교수명        강의언어");
-            Console.WriteLine(" ▷  100  디지털콘텐츠학과  009101   001  Capstone디자인(산...  전공필수   4    4.0  화목16:30-18:00,목18:00-20:00  율401/동401  Muhammad(1)...   한국어");
             
-            //print.UserVersionMenu();
-            //WaitUntilGetEnterKey();
+            print.UserVersionMenu();
+            WaitUntilGetEnterKey();
 
+            // 강의시간표 조회
+            int department;
+            string serialNumber;
+            string lectureName;
+            int grade;
+            string professor;
 
+            print.LectureSearchMenu(Data.Constants.LECTURE_SEARCH);
+            department = getValue.DropBox(21, 11, Constants.SELECT_DEPARTMENT); if (department == -1) return;
+            serialNumber = getValue.Information(17, 13, Constants.SERIAL_NUMBER, 6); if (string.Compare(serialNumber, "@입력취소@") == 0) return;
+            lectureName = getValue.Information(17, 15, Constants.LECTURE_NAME, 10); if (string.Compare(lectureName, "@입력취소@") == 0) return;
+            grade = getValue.DropBox(17, 17, Constants.SELECT_GRADE); if (grade == -1) return;
+            professor = getValue.Information(17, 19, Constants.PROFESSOR, 8); if (string.Compare(professor, "@입력취소@") == 0) return;
+            Console.SetCursorPosition(0, 23);
+            print.PrintSentence("강의시간표 조회하기");
+
+            
         }
 
         /// <summary>
