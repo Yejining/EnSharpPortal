@@ -27,7 +27,7 @@ namespace EnSharpPortal.Source.Main
 
                 // 범위 설정
                 //Excel.Range cellRange = worksheet.get_Range(worksheet.UsedRange.Rows.Count, worksheet.UsedRange.Columns.Count) as Excel.Range;
-                Excel.Range cellRange = worksheet.get_Range("B2", "L167") as Excel.Range;
+                Excel.Range cellRange = worksheet.get_Range("A2", "L167") as Excel.Range;
                 // 설정한 범위만큼 데이터 담기
                 Array data = cellRange.Cells.Value2;
                 

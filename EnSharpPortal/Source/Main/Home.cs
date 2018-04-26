@@ -16,6 +16,7 @@ namespace EnSharpPortal.Source.Main
         LogIn logIn = new LogIn();
         ClassVO data = new ClassVO();
         DataManager dataManager = new DataManager();
+        LecturePlanManage lecturePlanManage = new LecturePlanManage();
 
         private int userNumber;
 
@@ -35,27 +36,14 @@ namespace EnSharpPortal.Source.Main
         public void RunPortalWithoutLogIn()
         {
             // 데이터 로드(시간표)
-            //dataManager.LoadData();
-            
+            dataManager.LoadData();
+            List<ClassVO> classes = dataManager.Classes;
+
             print.UserVersionMenu();
             WaitUntilGetEnterKey();
 
-            // 강의시간표 조회
-            int department;
-            string serialNumber;
-            string lectureName;
-            int grade;
-            string professor;
-
-            print.LectureSearchMenu(Data.Constants.LECTURE_SEARCH);
-            department = getValue.DropBox(21, 11, Constants.SELECT_DEPARTMENT); if (department == -1) return;
-            serialNumber = getValue.Information(17, 13, Constants.SERIAL_NUMBER, 6); if (string.Compare(serialNumber, "@입력취소@") == 0) return;
-            lectureName = getValue.Information(17, 15, Constants.LECTURE_NAME, 10); if (string.Compare(lectureName, "@입력취소@") == 0) return;
-            grade = getValue.DropBox(17, 17, Constants.SELECT_GRADE); if (grade == -1) return;
-            professor = getValue.Information(17, 19, Constants.PROFESSOR, 8); if (string.Compare(professor, "@입력취소@") == 0) return;
-            Console.SetCursorPosition(0, 23);
-            print.PrintSentence("강의시간표 조회하기");
-
+            // 강의 시간표 조회
+            lecturePlanManage.InquireLectureSchedule(Constants.LECTURE_SEARCH, classes);
             
         }
 

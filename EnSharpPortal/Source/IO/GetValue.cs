@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using EnSharpPortal.Source.Main;
+using EnSharpPortal.Source.Data;
+
 namespace EnSharpPortal.Source.IO
 {
     class GetValue
     {
         Print print = new Print();
+        DataManager dataManager = new DataManager();
 
         public int Year(string date)
         {
@@ -226,7 +230,7 @@ namespace EnSharpPortal.Source.IO
                 else if (keyInfo.Key != ConsoleKey.Enter) print.InvalidInput(currentCursor, cursorTop);
                 else if (keyInfo.Key == ConsoleKey.Enter)
                 {
-                    if (answer.Length == 0) { return "0"; }
+                    if (answer.Length == 0 && mode == Data.Constants.SERIAL_NUMBER) return "0"; 
                     else return answer.ToString();
                 }
 
@@ -277,6 +281,87 @@ namespace EnSharpPortal.Source.IO
             }
 
             return answer;
+        }
+
+        /// <summary>
+        /// 사용자가 검색조건에 따라 검색한 강의 시간표들 반환하는 메소드입니다.
+        /// </summary>
+        /// <param name="department">사용자가 선택한 개설학과전공</param>
+        /// <param name="serialNumber">사용자가 입력한 학수번호</param>
+        /// <param name="lectureName">사용자가 입력한 강의명</param>
+        /// <param name="grade">사용자가 선택한 학년</param>
+        /// <param name="professor">사용자가 입력한 교수명</param>
+        /// <returns>검색된 강의 시간표</returns>
+        public List<ClassVO> SearchLectureByCondition(List<ClassVO> classes, int department, string serialNumber, string lectureName, int grade, string professor)
+        {
+            classes = ClearancedClasses(classes, department, grade);
+            classes = ClearancedClasses(classes, serialNumber, Constants.SERIAL_NUMBER);
+            classes = ClearancedClasses(classes, lectureName, Constants.LECTURE_NAME);
+            classes = ClearancedClasses(classes, professor, Constants.PROFESSOR);
+
+            return classes;
+        }
+
+        /// <summary>
+        /// 강의 리스트에서 검색어와 일치하지 않는 강의를 제거한 후 반환하는 메소드입니다.
+        /// </summary>
+        /// <param name="classes">강의 리스트</param>
+        /// <param name="department">사용자가 선택한 개설학과전공</param>
+        /// <param name="grade">사용자가 선택한 학년</param>
+        /// <returns>정리된 강의 리스트</returns>
+        public List<ClassVO> ClearancedClasses(List<ClassVO> classes, int department, int grade)
+        {
+            List<int> indexesToDelete = new List<int>();
+
+            // 개설전공학과 검색
+            if (department != 0)
+            {
+                for (int index = classes.Count - 1; index >= 0; index--)
+                    if (string.Compare(classes[index].Department, Constants.DEPARTMENT[department]) != 0)
+                        indexesToDelete.Add(index);
+                for (int delete = 0; delete < indexesToDelete.Count; delete++) classes.RemoveAt(indexesToDelete[delete]);
+                indexesToDelete.Clear();
+            }
+
+            // 학년 검색
+            if (grade != 0)
+            {
+                for (int index = classes.Count - 1; index >= 0; index--)
+                    if (classes[index].Grade != grade) indexesToDelete.Add(index);
+                for (int delete = 0; delete < indexesToDelete.Count; delete++) classes.RemoveAt(indexesToDelete[delete]);
+                indexesToDelete.Clear();
+            }
+
+            return classes;
+        }
+
+        /// <summary>
+        /// 강의 리스트에서 검색어와 일치하지 않는 강의를 제거한 후 반환하는 메소드입니다.
+        /// </summary>
+        /// <param name="classes">강의 리스트</param>
+        /// <param name="searchWord">검색어</param>
+        /// <param name="mode">검색 모드</param>
+        /// <returns>정리된 강의 리스트</returns>
+        public List<ClassVO> ClearancedClasses(List<ClassVO> classes, string searchWord, int mode)
+        {
+            string searchTarget;
+            List<int> indexesToDelete = new List<int>();
+
+            if (searchWord.Length != 0)
+            {
+                for (int index = classes.Count - 1; index >= 0; index--)
+                {
+                    if (mode == Constants.SERIAL_NUMBER) searchTarget = classes[index].SerialNumber;
+                    else if (mode == Constants.LECTURE_NAME) searchTarget = classes[index].LectureName;
+                    else searchTarget = classes[index].Professor;
+
+                    if (!System.Text.RegularExpressions.Regex.IsMatch(searchTarget, searchWord, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                        indexesToDelete.Add(index);
+                }
+                for (int delete = 0; delete < indexesToDelete.Count; delete++) classes.RemoveAt(indexesToDelete[delete]);
+            }
+
+            return classes;
         }
 
         /// <summary>
