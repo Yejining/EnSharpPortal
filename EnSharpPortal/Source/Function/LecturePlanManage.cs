@@ -12,6 +12,7 @@ namespace EnSharpPortal.Source.Function
     {
         Print print = new Print();
         GetValue getValue = new GetValue();
+        Tools tools = new Tools();
 
         // 강의 시간표 조회, 관심과목 담기
         public void InquireLectureSchedule(int mode, List<ClassVO> classes)
@@ -33,6 +34,37 @@ namespace EnSharpPortal.Source.Function
 
             classes = getValue.SearchLectureByCondition(classes, department, serialNumber, lectureName, grade, professor);
             print.SearchedLectureSchedule(classes, department, serialNumber, lectureName, grade, professor);
+            if (mode == Constants.PUT_LECTURE_IN_BASKET) PutLectureInBasket(classes);
+        }
+
+        public void PutLectureInBasket(List<ClassVO> classes)
+        {
+            List<ClassVO> classToPutBasket = new List<ClassVO>();
+
+            Console.SetCursorPosition(2, 12);
+            Console.Write('▷');
+
+            while (true)
+            {
+                ConsoleKeyInfo keyInfo = Console.ReadKey();
+
+                if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(2, 12, 1, '▷');
+                else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(2, 12, classes.Count, 1, '▷');
+                else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(2, "▷"); break; }
+                else if (keyInfo.Key == ConsoleKey.Enter)
+                {
+                    if (getValue.IsValidLecture(classes[Console.CursorTop - 12], classToPutBasket))
+                    {
+                        classToPutBasket.Add(classes[Console.CursorTop - 12]);
+                        print.CompletePutLectureInBasket(1, Console.CursorTop);
+                    }
+                    
+                }
+                else print.BlockCursorMove(2, "▷");
+            }
+
+            Console.SetCursorPosition(0, 30);
+            foreach (ClassVO lecture in classToPutBasket) Console.WriteLine(lecture.Number);
         }
     }
 }

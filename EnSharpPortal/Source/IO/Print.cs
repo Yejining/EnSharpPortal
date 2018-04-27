@@ -237,6 +237,15 @@ namespace EnSharpPortal.Source.IO
             }
         }
 
+        public void CompletePutLectureInBasket(int cursorLeft, int cursorTop)
+        {
+            Console.SetCursorPosition(cursorLeft, cursorTop);
+            Console.Write("선택");
+            System.Threading.Thread.Sleep(500);
+            Console.SetCursorPosition(cursorLeft, cursorTop);
+            Console.Write(new string(' ', 4));
+        }
+
         /// <summary>
         /// 콘솔창을 작은모드로 설정해주는 메소드입니다.
         /// </summary>
@@ -256,6 +265,29 @@ namespace EnSharpPortal.Source.IO
             Console.SetCursorPosition(0, Console.CursorTop);
             Console.Write(new string(' ', Console.WindowWidth));
             Console.SetCursorPosition(0, currentLineCursor);
+        }
+
+        /// <summary>
+        /// 콘솔에서 한 글자만을 삭제하는 메소드입니다.
+        /// </summary>
+        /// <param name="spaces">삭제할 글자의 왼쪽 커서 위치</param>
+        public void ClearOneLetter(int spaces)
+        {
+            Console.SetCursorPosition(spaces, Console.CursorTop);
+            Console.Write(' ');
+            Console.SetCursorPosition(spaces, Console.CursorTop);
+        }
+
+        /// <summary>
+        /// 커서의 움직임을 막는 메소드입니다.
+        /// </summary>
+        /// <param name="cursorLeft">커서 위치(들여쓰기)</param>
+        /// <param name="pointer">화살표</param>
+        public void BlockCursorMove(int cursorLeft, string pointer)
+        {
+            Console.SetCursorPosition(cursorLeft, Console.CursorTop);
+            Console.Write(pointer);
+            Console.SetCursorPosition(cursorLeft, Console.CursorTop);
         }
 
         /// <summary>

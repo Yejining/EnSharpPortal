@@ -21,8 +21,7 @@ namespace EnSharpPortal.Source.Data
         private int grade;
         private float credit;
         private string lectureSchedule;
-        private List<int> daysOfClass;
-        private bool[] timeOfClass;
+        private bool[,] timeOfClass;
         private string classRoom;
         private List<string> classRooms;
         private string professor;
@@ -47,12 +46,21 @@ namespace EnSharpPortal.Source.Data
             this.grade = grade;
             this.credit = credit;
             lectureSchedule = lectureTime;
-            daysOfClass = getValue.DaysOfClass(lectureTime);
             timeOfClass = getValue.TimeOfClass(lectureTime);
             this.classRoom = classRoom;
             classRooms = getValue.ClassRoom(classRoom);
             this.professor = professor;
             this.lectureLanguage = lectureLanguage;
+        }
+
+        public bool[,] TimeOfClass
+        {
+            get { return timeOfClass; }
+        }
+
+        public int Number
+        {
+            get { return number; }
         }
 
         public string Department

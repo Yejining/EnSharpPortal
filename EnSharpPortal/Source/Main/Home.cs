@@ -43,7 +43,7 @@ namespace EnSharpPortal.Source.Main
             WaitUntilGetEnterKey();
 
             // 강의 시간표 조회
-            lecturePlanManage.InquireLectureSchedule(Constants.LECTURE_SEARCH, classes);
+            lecturePlanManage.InquireLectureSchedule(Constants.PUT_LECTURE_IN_BASKET, classes);
             
         }
 

@@ -52,6 +52,7 @@
     <Compile Include="Source\Data\MemberVO.cs" />
     <Compile Include="Source\Function\LecturePlanManage.cs" />
     <Compile Include="Source\Function\LogIn.cs" />
+    <Compile Include="Source\Function\Tools.cs" />
     <Compile Include="Source\IO\GetValue.cs" />
     <Compile Include="Source\IO\Print.cs" />
     <Compile Include="Source\Main\DataManager.cs" />

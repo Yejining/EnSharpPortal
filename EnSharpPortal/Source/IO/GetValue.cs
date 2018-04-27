@@ -84,7 +84,64 @@ namespace EnSharpPortal.Source.IO
             return daysOfClass;
         }
 
-        public bool[] TimeOfClass(string lectureTime)
+        public bool[,] TimeOfClass(string lectureTime)
+        {
+            bool[,] schedule = new bool[5, 24];
+            bool[] timeOfClass = new bool[24];
+            bool[] practiceClass = new bool[24];
+            Array.Clear(schedule, 0, schedule.Length);
+
+            int turn = 0;
+            char day = 'a';
+
+            // timeOfClass 배열에 저장
+            for (int i = 0; i < lectureTime.Length; i++)
+            {
+                if (lectureTime[i] == '-')
+                {
+                    turn++;
+
+                    if (turn == 1) timeOfClass = SetTimeInArray(lectureTime, i);
+                    if (turn == 2)
+                    {
+                        day = lectureTime[i - 6];
+                        practiceClass = SetTimeInArray(lectureTime, i);
+                    }
+                }
+            }
+
+            // 해당 요일에 시간표 저장
+            for (int i = 0; i < 2; i++)
+            {
+                if (lectureTime[i] == '월') schedule = CopyArray(timeOfClass, schedule, 0);
+                else if (lectureTime[i] == '화') schedule = CopyArray(timeOfClass, schedule, 1);
+                else if (lectureTime[i] == '수') schedule = CopyArray(timeOfClass, schedule, 2);
+                else if (lectureTime[i] == '목') schedule = CopyArray(timeOfClass, schedule, 3);
+                else if (lectureTime[i] == '금') schedule = CopyArray(timeOfClass, schedule, 4);
+            }
+
+            if (turn == 2) schedule = AppendArray(practiceClass, schedule, day);
+
+            return schedule;
+        }
+
+        public bool[,] AppendArray(bool[] sourceArray, bool[,] destinationArray, char dayOfWeek)
+        {
+            int destination = -1;
+
+            if (dayOfWeek == '월') destination = 0;
+            else if (dayOfWeek == '화') destination = 1;
+            else if (dayOfWeek == '수') destination = 2;
+            else if (dayOfWeek == '목') destination = 3;
+            else if (dayOfWeek == '금') destination = 4;
+
+            for (int index = 0; index < sourceArray.Length; index++)
+                if (sourceArray[index]) destinationArray[destination, index] = sourceArray[index];
+
+            return destinationArray;
+        }
+
+        public bool[] SetTimeInArray(string lectureTime, int index)
         {
             bool[] timeOfClass = new bool[24];
             Array.Clear(timeOfClass, 0, timeOfClass.Length);
@@ -92,26 +149,28 @@ namespace EnSharpPortal.Source.IO
             int lectureStartTime, lecureEndTime;
             int indexToStartFillTrue, indexToFinish;
 
-            for (int i = 0; i < lectureTime.Length; i++)
-            {
-                if (lectureTime[i] == '-')
-                {
-                    lectureStartTime = CharToInt(lectureTime[i - 5], lectureTime[i - 4]);
-                    lecureEndTime = CharToInt(lectureTime[i + 1], lectureTime[i + 2]);
-                    
-                    indexToStartFillTrue = 2 * (lectureStartTime - 9);
-                    if (lectureTime[i - 2] == '3') indexToStartFillTrue++;
+            lectureStartTime = CharToInt(lectureTime[index - 5], lectureTime[index - 4]);
+            lecureEndTime = CharToInt(lectureTime[index + 1], lectureTime[index + 2]);
 
-                    indexToFinish = 2 * (lecureEndTime - 9);
-                    if (lectureTime[i + 4] == '3') indexToFinish++;
-                    
-                    for (int index = indexToStartFillTrue; index < indexToFinish; index++)
-                        timeOfClass[index] = true;
-                }
-            }
+            indexToStartFillTrue = 2 * (lectureStartTime - 9);
+            if (lectureTime[index - 2] == '3') indexToStartFillTrue++;
+
+            indexToFinish = 2 * (lecureEndTime - 9);
+            if (lectureTime[index + 4] == '3') indexToFinish++;
+
+            for (int i = indexToStartFillTrue; i < indexToFinish; i++)
+                timeOfClass[i] = true;
 
             return timeOfClass;
         }
+
+        public bool[,] CopyArray(bool[] sourceArray, bool[,] destinationArray, int destination)
+        {
+            for (int index = 0; index < sourceArray.Length; index++)
+                destinationArray[destination, index] = sourceArray[index];
+
+            return destinationArray;
+        } 
 
         public int CharToInt(char letter1, char letter2)
         {
@@ -375,11 +434,51 @@ namespace EnSharpPortal.Source.IO
             else return false;
         }
 
+        // 수정 필요, 입력값이 올바른지 학인하는 것
         public bool IsValid(ConsoleKeyInfo keyInfo, int mode)
         {
             if (mode == Data.Constants.SERIAL_NUMBER) return IsNumber(keyInfo);
             if (keyInfo.Key == ConsoleKey.Enter) return false;
             return true;
+        }
+
+        /// <summary>
+        /// 관심과목 담기 혹은 수강신청시 신청하고자 하는 과목이 유효한지의 여부를 검사해주는 메소드입니다.
+        /// </summary>
+        /// <param name="lecture">검사하고 싶은 수업</param>
+        /// <param name="classes">신청한 수업들</param>
+        /// <returns>신청 과목 유효 여부</returns>
+        public bool IsValidLecture(ClassVO lecture, List<ClassVO> classes)
+        {
+            float sumOfCredit = 0;
+
+            if (classes.Count == 0) return true;
+
+            foreach (ClassVO selectedClass in classes)
+            {
+                sumOfCredit += selectedClass.Credit;
+                if (lecture.SerialNumber == selectedClass.SerialNumber) return false;
+                if (IsOverLapClass(lecture, selectedClass)) return false;
+            }
+
+            if (sumOfCredit > 24) return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// 강의1과 강의2의 시간이 일치하는지 여부를 검사합니다.
+        /// </summary>
+        /// <param name="class1"></param>
+        /// <param name="class2"></param>
+        /// <returns></returns>
+        public bool IsOverLapClass(ClassVO class1, ClassVO class2)
+        {
+            for (int row = 0; row < class1.TimeOfClass.GetLength(0); row++)
+                for (int column = 0; column < class1.TimeOfClass.GetLength(1); column++)
+                    if (class1.TimeOfClass[row, column] == class2.TimeOfClass[row, column] && class1.TimeOfClass[row, column] == true)
+                        return true;
+            return false;
         }
     }
 }
