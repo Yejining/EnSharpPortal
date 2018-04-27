@@ -22,7 +22,7 @@ namespace EnSharpPortal.Source.Function
         public void DownArrow(int cursorLocation, int startingLine, int countOfOption, int interval, char pointer)
         {
             print.ClearOneLetter(cursorLocation);
-            if (Console.CursorTop < startingLine + countOfOption - 1) Console.SetCursorPosition(cursorLocation, Console.CursorTop + interval);
+            if (Console.CursorTop < startingLine + (interval * (countOfOption - 1))) Console.SetCursorPosition(cursorLocation, Console.CursorTop + interval);
             Console.Write(pointer);
         }
     }

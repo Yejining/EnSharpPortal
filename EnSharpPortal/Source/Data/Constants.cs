@@ -159,5 +159,16 @@ namespace EnSharpPortal.Source.Data
 
         public const int SELECT_DEPARTMENT = 0;
         public const int SELECT_GRADE = 1;
+
+        public const int STUDENT_INFORMATION = 0;
+        public const int CHANGE_PASSWORD = 1;
+        public const int APPLICATION_FOR_CHANGING_REGISTER = 2;
+        public const int INQUIRE_LECTURE_SCHEDULE = 3;
+        public const int PUT_INTO_BASKET = 4;
+        public const int MANAGE_BASKET = 5;
+        public const int REGISTER_LECTURE = 6;
+        public const int CHECK_MY_SCHEDULE = 7;
+        public const int INFORMATION_ABOUT_PORTAL = 8;
+        public const int LOG_OUT = 9;
     }
 }

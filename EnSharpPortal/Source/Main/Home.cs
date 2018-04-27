@@ -17,8 +17,10 @@ namespace EnSharpPortal.Source.Main
         ClassVO data = new ClassVO();
         DataManager dataManager = new DataManager();
         LecturePlanManage lecturePlanManage = new LecturePlanManage();
+        Tools tools = new Tools();
 
         private int userNumber;
+        private List<ClassVO> basket = new List<ClassVO>();
 
         public void RunPortal()
         {
@@ -35,16 +37,64 @@ namespace EnSharpPortal.Source.Main
 
         public void RunPortalWithoutLogIn()
         {
+            bool isFirstLoop = true;
+
             // 데이터 로드(시간표)
             dataManager.LoadData();
             List<ClassVO> classes = dataManager.Classes;
-
-            print.UserVersionMenu();
-            WaitUntilGetEnterKey();
-
-            // 강의 시간표 조회
-            lecturePlanManage.InquireLectureSchedule(Constants.PUT_LECTURE_IN_BASKET, classes);
             
+            while (true)
+            {
+                if(isFirstLoop)
+                {
+                    // 메뉴 출력
+                    print.UserVersionMenu();
+
+                    // 기능 선택
+                    Console.SetCursorPosition(5, 8);
+                    Console.Write('▷');
+
+                    isFirstLoop = false;
+                }
+
+                ConsoleKeyInfo keyInfo = Console.ReadKey();
+
+                if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(5, 8, 2, '▷');
+                else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(5, 8, 10, 2, '▷');
+                else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(5, "▷"); break; }
+                else if (keyInfo.Key == ConsoleKey.Enter) { GoNextFunction((Console.CursorTop / 2) - 4, classes); isFirstLoop = true; }
+                else print.BlockCursorMove(5, "▷");
+            }
+        }
+
+        public void GoNextFunction(int cursorTop, List<ClassVO> classes)
+        {
+            switch (cursorTop)
+            {
+                case Constants.STUDENT_INFORMATION:
+                    return;
+                case Constants.CHANGE_PASSWORD:
+                    return;
+                case Constants.APPLICATION_FOR_CHANGING_REGISTER:
+                    return;
+                case Constants.INQUIRE_LECTURE_SCHEDULE:
+                    lecturePlanManage.InquireLectureSchedule(Constants.PUT_LECTURE_IN_BASKET, classes);
+                    return;
+                case Constants.PUT_INTO_BASKET:
+                    basket = lecturePlanManage.InquireLectureSchedule(Constants.PUT_LECTURE_IN_BASKET, classes);
+                    return;
+                case Constants.MANAGE_BASKET:
+                    basket = lecturePlanManage.LookAroundBasket(basket);
+                    return;
+                case Constants.REGISTER_LECTURE:
+                    return;
+                case Constants.CHECK_MY_SCHEDULE:
+                    return;
+                case Constants.INFORMATION_ABOUT_PORTAL:
+                    return;
+                case Constants.LOG_OUT:
+                    return;
+            }
         }
 
         /// <summary>

@@ -145,10 +145,6 @@ namespace EnSharpPortal.Source.IO
         /// <param name="professor">사용자가 검색시 입력한 교수명</param>
         public void SearchedLectureSchedule(List<ClassVO> classes, int department, string serialNumber, string lectureName, int grade, string professor)
         {
-            StringBuilder name = new StringBuilder();
-            StringBuilder shortenProfessor = new StringBuilder();
-            string credit;
-
             Console.SetWindowSize(160, 35);
             Console.Clear();
 
@@ -156,7 +152,18 @@ namespace EnSharpPortal.Source.IO
             Console.SetCursorPosition(0, 9);
             foreach (string guideline in Constants.LECTURE_SCHEDULE_GUIDELINE) Console.WriteLine(guideline);
 
-            foreach (ClassVO lecture in classes)
+            Lectures(classes, Console.CursorTop);
+        }
+
+        public void Lectures(List<ClassVO> lectures, int cursorTop)
+        {
+            StringBuilder name = new StringBuilder();
+            StringBuilder shortenProfessor = new StringBuilder();
+            string credit;
+
+            Console.SetCursorPosition(0, cursorTop);
+
+            foreach (ClassVO lecture in lectures)
             {
                 Console.SetCursorPosition(6, Console.CursorTop);
                 Console.Write(lecture.Department);
@@ -244,6 +251,26 @@ namespace EnSharpPortal.Source.IO
             System.Threading.Thread.Sleep(500);
             Console.SetCursorPosition(cursorLeft, cursorTop);
             Console.Write(new string(' ', 4));
+        }
+
+        public void LectureInBasket(List<ClassVO> basket)
+        {
+            Console.SetCursorPosition(120, 2);
+            foreach (string title in Constants.ENSHARP_TITLE_IN_SEARCH_MODE)
+            {
+                Console.WriteLine(title);
+                Console.SetCursorPosition(120, Console.CursorTop);
+            }
+
+            Console.SetCursorPosition(7, 3);
+            Console.Write("| 관심과목 관리 |");
+
+            Console.SetCursorPosition(0, 6);
+            foreach (string guideline in Constants.LECTURE_SCHEDULE_GUIDELINE) Console.WriteLine(guideline);
+            Console.SetCursorPosition(1, 7);
+            Console.Write("삭제");
+
+            Lectures(basket, 9);
         }
 
         /// <summary>

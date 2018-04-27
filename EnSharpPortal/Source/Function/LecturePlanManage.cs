@@ -13,9 +13,14 @@ namespace EnSharpPortal.Source.Function
         Print print = new Print();
         GetValue getValue = new GetValue();
         Tools tools = new Tools();
-
-        // 강의 시간표 조회, 관심과목 담기
-        public void InquireLectureSchedule(int mode, List<ClassVO> classes)
+        
+        /// <summary>
+        /// 강의 시간표를 조회하는 메소드입니다.
+        /// 강의 시간표 조회, 관심과목 담기 기능에서 사용됩니다.
+        /// </summary>
+        /// <param name="mode">기능</param>
+        /// <param name="classes">강의 시간표</param>
+        public List<ClassVO> InquireLectureSchedule(int mode, List<ClassVO> classes)
         {
             int department;
             string serialNumber;
@@ -24,20 +29,25 @@ namespace EnSharpPortal.Source.Function
             string professor;
             
             print.LectureSearchMenu(Constants.LECTURE_SEARCH);
-            department = getValue.DropBox(21, 11, Constants.SELECT_DEPARTMENT); if (department == -1) return;
-            serialNumber = getValue.Information(17, 13, Constants.SERIAL_NUMBER, 6); if (string.Compare(serialNumber, "@입력취소@") == 0) return;
-            lectureName = getValue.Information(17, 15, Constants.LECTURE_NAME, 10); if (string.Compare(lectureName, "@입력취소@") == 0) return;
-            grade = getValue.DropBox(17, 17, Constants.SELECT_GRADE); if (grade == -1) return;
-            professor = getValue.Information(17, 19, Constants.PROFESSOR, 8); if (string.Compare(professor, "@입력취소@") == 0) return;
+            department = getValue.DropBox(21, 11, Constants.SELECT_DEPARTMENT); if (department == -1) return null;
+            serialNumber = getValue.Information(17, 13, Constants.SERIAL_NUMBER, 6); if (string.Compare(serialNumber, "@입력취소@") == 0) return null;
+            lectureName = getValue.Information(17, 15, Constants.LECTURE_NAME, 10); if (string.Compare(lectureName, "@입력취소@") == 0) return null;
+            grade = getValue.DropBox(17, 17, Constants.SELECT_GRADE); if (grade == -1) return null;
+            professor = getValue.Information(17, 19, Constants.PROFESSOR, 8); if (string.Compare(professor, "@입력취소@") == 0) return null;
             Console.SetCursorPosition(0, 23);
             print.PrintSentence("강의시간표 조회하기");
 
             classes = getValue.SearchLectureByCondition(classes, department, serialNumber, lectureName, grade, professor);
             print.SearchedLectureSchedule(classes, department, serialNumber, lectureName, grade, professor);
-            if (mode == Constants.PUT_LECTURE_IN_BASKET) PutLectureInBasket(classes);
+            if (mode == Constants.PUT_LECTURE_IN_BASKET) return PutLectureInBasket(classes);
+            return null;
         }
 
-        public void PutLectureInBasket(List<ClassVO> classes)
+        /// <summary>
+        /// 관심과목을 담는 메소드입니다.
+        /// </summary>
+        /// <param name="classes">강의 시간표</param>
+        public List<ClassVO> PutLectureInBasket(List<ClassVO> classes)
         {
             List<ClassVO> classToPutBasket = new List<ClassVO>();
 
@@ -58,13 +68,30 @@ namespace EnSharpPortal.Source.Function
                         classToPutBasket.Add(classes[Console.CursorTop - 12]);
                         print.CompletePutLectureInBasket(1, Console.CursorTop);
                     }
-                    
                 }
                 else print.BlockCursorMove(2, "▷");
             }
 
-            Console.SetCursorPosition(0, 30);
-            foreach (ClassVO lecture in classToPutBasket) Console.WriteLine(lecture.Number);
+            return classToPutBasket;
+        }
+
+        public List<ClassVO> LookAroundBasket(List<ClassVO> basket)
+        {
+            Console.SetWindowSize(160, 35);
+            Console.Clear();
+
+            print.LectureInBasket(basket);
+
+            ConsoleKeyInfo keyInfo;
+
+            while (true)
+            {
+                keyInfo = Console.ReadKey();
+
+                if (keyInfo.Key == ConsoleKey.Enter) break;
+            }
+
+            return basket;
         }
     }
 }
