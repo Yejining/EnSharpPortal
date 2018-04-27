@@ -17,7 +17,7 @@ namespace EnSharpPortal.Source.Data
         private string serialNumber;
         private string divisionClassNumber;
         private string lectureName;
-        private int courseDivision;
+        private string courseDivision;
         private int grade;
         private float credit;
         private string lectureSchedule;
@@ -26,7 +26,7 @@ namespace EnSharpPortal.Source.Data
         private string classRoom;
         private List<string> classRooms;
         private string professor;
-        private int lectureLanguage;
+        private string lectureLanguage;
 
         public ClassVO()
         {
@@ -43,7 +43,7 @@ namespace EnSharpPortal.Source.Data
             this.serialNumber = serialNumber;
             this.divisionClassNumber = divisionClassNumber;
             this.lectureName = lectureName;
-            this.courseDivision = getValue.CourseDivision(courseDivision);
+            this.courseDivision = courseDivision;
             this.grade = grade;
             this.credit = credit;
             lectureSchedule = lectureTime;
@@ -52,7 +52,7 @@ namespace EnSharpPortal.Source.Data
             this.classRoom = classRoom;
             classRooms = getValue.ClassRoom(classRoom);
             this.professor = professor;
-            this.lectureLanguage = getValue.LectureLanguage(lectureLanguage);
+            this.lectureLanguage = lectureLanguage;
         }
 
         public string Department
@@ -70,14 +70,44 @@ namespace EnSharpPortal.Source.Data
             get { return serialNumber; }
         }
 
+        public string DivisionClassNumber
+        {
+            get { return divisionClassNumber; }
+        }
+
         public string LectureName
         {
             get { return lectureName; }
         }
 
+        public string CourseDivision
+        {
+            get { return courseDivision; }
+        }
+
+        public float Credit
+        {
+            get { return credit; }
+        }
+
+        public string LectureSchedule
+        {
+            get { return lectureSchedule; }
+        }
+
+        public string ClassRoom
+        {
+            get { return classRoom; }
+        }
+
         public string Professor
         {
             get { return professor; }
+        }
+
+        public string LectureLanguage
+        {
+            get { return lectureLanguage; }
         }
 
         public override string ToString()

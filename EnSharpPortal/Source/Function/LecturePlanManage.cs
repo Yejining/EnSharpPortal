@@ -32,8 +32,7 @@ namespace EnSharpPortal.Source.Function
             print.PrintSentence("강의시간표 조회하기");
 
             classes = getValue.SearchLectureByCondition(classes, department, serialNumber, lectureName, grade, professor);
-            foreach (ClassVO lecture in classes)
-                Console.WriteLine(lecture.ToString());
+            print.SearchedLectureSchedule(classes, department, serialNumber, lectureName, grade, professor);
         }
     }
 }

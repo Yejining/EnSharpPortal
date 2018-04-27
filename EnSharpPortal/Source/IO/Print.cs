@@ -87,6 +87,9 @@ namespace EnSharpPortal.Source.IO
 
         }
 
+        /// <summary>
+        /// 유저 버전으로 로그인했을 때 메뉴를 출력하는 메소드입니다.
+        /// </summary>
         public void UserVersionMenu()
         {
             SetWindowSmallSize();
@@ -97,6 +100,10 @@ namespace EnSharpPortal.Source.IO
             PrintSentences(Data.Constants.USER_VERSION_MENU);
         }
 
+        /// <summary>
+        /// 강의시간표를 조회할 때의 메뉴를 출력하는 메소드입니다.
+        /// </summary>
+        /// <param name="mode">강의 시간표 조회, 관심과목 담기, 수강신청</param>
         public void LectureSearchMenu(int mode)
         {
             SetWindowSmallSize();
@@ -123,6 +130,109 @@ namespace EnSharpPortal.Source.IO
                     Console.ForegroundColor = ConsoleColor.DarkGray;
                     Console.WriteLine(Constants.SEARCHING_MENU[sentence]);
                     Console.SetCursorPosition(6, Console.CursorTop + 1);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 강의 시간표 검색 결과를 출력하는 메소드입니다.
+        /// </summary>
+        /// <param name="classes">검색된 시간표 결과</param>
+        /// <param name="department">사용자가 검색시 입력한 개설학과전공</param>
+        /// <param name="serialNumber">사용자가 검색시 입력한 학수번호</param>
+        /// <param name="lectureName">사용자가 검색시 입력한 강의명</param>
+        /// <param name="grade">사용자가 검색시 선택한 학년</param>
+        /// <param name="professor">사용자가 검색시 입력한 교수명</param>
+        public void SearchedLectureSchedule(List<ClassVO> classes, int department, string serialNumber, string lectureName, int grade, string professor)
+        {
+            StringBuilder name = new StringBuilder();
+            StringBuilder shortenProfessor = new StringBuilder();
+            string credit;
+
+            Console.SetWindowSize(160, 35);
+            Console.Clear();
+
+            LectureScheduleTitle(department, serialNumber, lectureName, grade, professor);
+            Console.SetCursorPosition(0, 9);
+            foreach (string guideline in Constants.LECTURE_SCHEDULE_GUIDELINE) Console.WriteLine(guideline);
+
+            foreach (ClassVO lecture in classes)
+            {
+                Console.SetCursorPosition(6, Console.CursorTop);
+                Console.Write(lecture.Department);
+                Console.SetCursorPosition(25, Console.CursorTop);
+                Console.Write(lecture.SerialNumber);
+                Console.SetCursorPosition(34, Console.CursorTop);
+                Console.Write(lecture.DivisionClassNumber);
+                Console.SetCursorPosition(40, Console.CursorTop);
+                name.Clear();
+                name.Append(lecture.LectureName);
+                if (lecture.LectureName.Length > 15) { name.Remove(15, name.Length - 15); name.Append("..."); }
+                Console.Write(name);
+                Console.SetCursorPosition(67, Console.CursorTop);
+                Console.Write(lecture.CourseDivision);
+                Console.SetCursorPosition(78, Console.CursorTop);
+                Console.Write(lecture.Grade);
+                Console.SetCursorPosition(82, Console.CursorTop);
+                credit = string.Empty;
+                credit = lecture.Credit.ToString("N1");
+                Console.Write(credit);
+                Console.SetCursorPosition(88, Console.CursorTop);
+                Console.Write(lecture.LectureSchedule);
+                Console.SetCursorPosition(120, Console.CursorTop);
+                Console.Write(lecture.ClassRoom);
+                Console.SetCursorPosition(134, Console.CursorTop);
+                shortenProfessor.Clear();
+                shortenProfessor.Append(lecture.Professor);
+                if (lecture.Professor.Length > 8) { shortenProfessor.Remove(8, shortenProfessor.Length - 8); shortenProfessor.Append("..."); }
+                Console.Write(shortenProfessor);
+                Console.SetCursorPosition(148, Console.CursorTop);
+                Console.WriteLine(lecture.LectureLanguage);
+            }
+        }
+
+        /// <summary>
+        /// 강의 시간표 검색 결과를 나타낼 때 배경을 출력해주는 메소드입니다.
+        /// </summary>
+        /// <param name="department">사용자가 검색시 입력한 개설학과전공</param>
+        /// <param name="serialNumber">사용자가 검색시 입력한 학수번호</param>
+        /// <param name="lectureName">사용자가 검색시 입력한 강의명</param>
+        /// <param name="grade">사용자가 검색시 선택한 학년</param>
+        /// <param name="professor">사용자가 검색시 입력한 교수명</param>
+        public void LectureScheduleTitle(int department, string serialNumber, string lectureName, int grade, string professor)
+        {
+            List<string> searchingCondition = new List<string>();
+
+            Console.SetCursorPosition(120, 2);
+            foreach (string title in Constants.ENSHARP_TITLE_IN_SEARCH_MODE)
+            {
+                Console.WriteLine(title);
+                Console.SetCursorPosition(120, Console.CursorTop);
+            }
+
+            searchingCondition.Add(Constants.DEPARTMENT[department]);
+            if (string.Compare(serialNumber, "0") == 0) serialNumber = string.Copy("전체 학수번호");
+            searchingCondition.Add(serialNumber);
+            if (string.Compare(lectureName, "") == 0) lectureName = string.Copy("전체");
+            searchingCondition.Add(lectureName);
+            searchingCondition.Add(Constants.GRADE[grade]);
+            if (string.Compare(professor, "") == 0) professor = string.Copy("전체");
+            searchingCondition.Add(professor);
+
+            Console.SetCursorPosition(7, 2);
+            for (int item = 0; item < Constants.SEARCHING_MENU_IN_SEARCHING_MODE.Count(); item++)
+            {
+                if (item % 2 == 0)
+                {
+                    Console.Write(Constants.SEARCHING_MENU_IN_SEARCHING_MODE[item]);
+                    Console.Write(searchingCondition[item]);
+                }
+                else
+                {
+                    Console.SetCursorPosition(55, Console.CursorTop);
+                    Console.Write(Constants.SEARCHING_MENU_IN_SEARCHING_MODE[item]);
+                    Console.WriteLine(searchingCondition[item]);
+                    Console.SetCursorPosition(7, Console.CursorTop + 1);
                 }
             }
         }

@@ -26,14 +26,23 @@ namespace EnSharpPortal.Source.Data
             "  관리자 : 010-5110-1996                  "
         };
 
-        public static string[] ENSHARP_TITLE = {
+        public static string[] ENSHARP_TITLE =
+        {
             "┏                  ┓",
             "엔 샵     포 탈",
             " ENJOY C SHARP!",
             "┗                  ┛"
         };
 
-        public static string[] USER_VERSION_MENU = {
+        public static string[] ENSHARP_TITLE_IN_SEARCH_MODE =
+        {
+            "┏                                ┓",
+            "   엔 샵  포 탈 | ENJOY C SHARP!",
+            "┗                                ┛"
+        };
+
+        public static string[] USER_VERSION_MENU =
+        {
             "학 생  기 초  정 보","",
             "비 밀 번 호   변 경","",
             "학 적 변 경   신 청","",
@@ -58,6 +67,15 @@ namespace EnSharpPortal.Source.Data
             "선택",
             "교 수 명 | ",
             "입력"
+        };
+
+        public static string[] SEARCHING_MENU_IN_SEARCHING_MODE =
+        {
+            "개 설  학 과  전 공 | ",
+            "학수번호 | ",
+            "교   과    목   명  | ",
+            "학    년 | ",
+            "교      수      명  | "
         };
 
         public static string[] DEPARTMENT =
@@ -100,7 +118,16 @@ namespace EnSharpPortal.Source.Data
             "- 관 심 과 목   담 기-",
             "- 수   강     신   청-"
         };
+
+        public static string[] LECTURE_SCHEDULE_GUIDELINE =
+        {
+            "-----------------------------------------------------------------------------------------------------------------------------------------------------------",
+            " 선택   개설학과전공    학수번호  분반          교과목명           이수구분  학년 학점          요일 및 강의시간          강의실       교수명      강의언어",
+            "-----------------------------------------------------------------------------------------------------------------------------------------------------------",
+            "  ▷  디지털콘텐츠학과   000000   000   Capstone디자인(산학협...   전공필수   4   4.0   화목16:30-18:00,목18:00-20:00   율401/동401   Muhammad...   한국어"
+        };
         
+
         public const int ID = 1;
         public const int PASSWORD = 2;
 
