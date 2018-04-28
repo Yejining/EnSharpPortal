@@ -66,8 +66,9 @@ namespace EnSharpPortal.Source.Function
                     if (getValue.IsValidLecture(classes[Console.CursorTop - 12], classToPutBasket))
                     {
                         classToPutBasket.Add(classes[Console.CursorTop - 12]);
-                        print.CompletePutLectureInBasket(1, Console.CursorTop);
+                        print.CompletePutOrDeleteLectureInBasket(1, Console.CursorTop, Constants.PUT);
                     }
+                    else print.CompletePutOrDeleteLectureInBasket(1, Console.CursorTop, Constants.FAIL);
                 }
                 else print.BlockCursorMove(2, "▷");
             }
@@ -77,18 +78,37 @@ namespace EnSharpPortal.Source.Function
 
         public List<ClassVO> LookAroundBasket(List<ClassVO> basket)
         {
+            ConsoleKeyInfo keyInfo;
+            bool isFirstLoop = true;
+
             Console.SetWindowSize(160, 35);
             Console.Clear();
 
             print.LectureInBasket(basket);
 
-            ConsoleKeyInfo keyInfo;
-
             while (true)
             {
+                if (isFirstLoop)
+                {
+                    Console.SetCursorPosition(2, 9);
+                    Console.Write('▷');
+                    isFirstLoop = false;
+                }
+
                 keyInfo = Console.ReadKey();
 
-                if (keyInfo.Key == ConsoleKey.Enter) break;
+                if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(2, 9, 1, '▷');
+                else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(2, 9, basket.Count, 1, '▷');
+                else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(2, "▷"); break; }
+                else if (keyInfo.Key == ConsoleKey.Enter)
+                {
+                    print.CompletePutOrDeleteLectureInBasket(1, Console.CursorTop, Constants.DELETE);
+                    for (int count = 0; count < basket.Count; count++) { Console.SetCursorPosition(0, 9 + count); print.ClearCurrentConsoleLine(); }
+                    basket.RemoveAt(Console.CursorTop - 10);
+                    print.Lectures(basket, 9);
+                    isFirstLoop = true;
+                }
+                else print.BlockCursorMove(2, "▷");
             }
 
             return basket;

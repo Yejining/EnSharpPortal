@@ -244,15 +244,23 @@ namespace EnSharpPortal.Source.IO
             }
         }
 
-        public void CompletePutLectureInBasket(int cursorLeft, int cursorTop)
+        public void CompletePutOrDeleteLectureInBasket(int cursorLeft, int cursorTop, int mode)
         {
             Console.SetCursorPosition(cursorLeft, cursorTop);
-            Console.Write("선택");
+            if (mode == Constants.PUT) Console.Write("선택");
+            else if (mode == Constants.DELETE) Console.Write("삭제");
+            else if (mode == Constants.FAIL) Console.Write(" X");
             System.Threading.Thread.Sleep(500);
             Console.SetCursorPosition(cursorLeft, cursorTop);
             Console.Write(new string(' ', 4));
+            Console.SetCursorPosition(cursorLeft + 1, cursorTop);
+            Console.Write('▷');
         }
 
+        /// <summary>
+        /// 관심과목으로 담겨진 강의 시간표들을 출력하는 메소드입니다.
+        /// </summary>
+        /// <param name="basket">관심과목 수업 리스트</param>
         public void LectureInBasket(List<ClassVO> basket)
         {
             Console.SetCursorPosition(120, 2);
@@ -313,7 +321,7 @@ namespace EnSharpPortal.Source.IO
         public void BlockCursorMove(int cursorLeft, string pointer)
         {
             Console.SetCursorPosition(cursorLeft, Console.CursorTop);
-            Console.Write(pointer);
+            Console.Write(pointer + ' ');
             Console.SetCursorPosition(cursorLeft, Console.CursorTop);
         }
 

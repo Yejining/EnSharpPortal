@@ -170,5 +170,9 @@ namespace EnSharpPortal.Source.Data
         public const int CHECK_MY_SCHEDULE = 7;
         public const int INFORMATION_ABOUT_PORTAL = 8;
         public const int LOG_OUT = 9;
+
+        public const int PUT = 0;
+        public const int DELETE = 1;
+        public const int FAIL = 2;
     }
 }
