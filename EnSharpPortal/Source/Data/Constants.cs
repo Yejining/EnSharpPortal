@@ -125,6 +125,34 @@ namespace EnSharpPortal.Source.Data
             " 선택   개설학과전공    학수번호  분반          교과목명           이수구분  학년 학점          요일 및 강의시간          강의실       교수명      강의언어",
             "-----------------------------------------------------------------------------------------------------------------------------------------------------------"
         };
+
+        public static string[] TEMPLATE1 =
+        {
+            "------------------------------------------------------------------------------------------------------------------",
+            "    ː                    ː                    ː                    ː                    ː                    "
+        };
+
+        public static string TEMPLATE2 = "               월                    화                    수                    목                    금";
+
+
+        public static string[] MY_SCHEDULE_MENU =
+        {
+            "-내 시간표 관리-", "", "", "",
+            "시간표 열람", "", "",
+            "시간표 저장", "", "",
+            "시간표 관리"
+        };
+
+        public static ConsoleColor[] COLORS =
+        {
+            ConsoleColor.DarkBlue,
+            ConsoleColor.DarkCyan,
+            ConsoleColor.DarkGray,
+            ConsoleColor.DarkGreen,
+            ConsoleColor.DarkMagenta,
+            ConsoleColor.DarkRed,
+            ConsoleColor.DarkYellow
+        };
         
         public const int ID = 1;
         public const int PASSWORD = 2;
@@ -181,5 +209,9 @@ namespace EnSharpPortal.Source.Data
         public const int YEAR = 3;
         public const int PROFESSOR_NAME = 4;
         public const int BASKET = 5;
+
+        public const int INQUIRE_MY_LECTURE_SCHEDULE = 0;
+        public const int SAVE_MY_LECTURE_SCHEDULE = 1;
+        public const int MANAGE_MY_LECTURE_SCHEDULE = 2;
     }
 }

@@ -137,6 +137,16 @@ namespace EnSharpPortal.Source.IO
             }
         }
 
+        public void ManageEnrolledLectureMenu()
+        {
+            SetWindowSmallSize();
+            SetBackgroundColor(ConsoleColor.Black);
+            Console.SetCursorPosition(0, 3);
+            PrintSentences(Data.Constants.ENSHARP_TITLE);
+            Console.SetCursorPosition(0, 8);
+            PrintSentences(Constants.MY_SCHEDULE_MENU);
+        }
+
         /// <summary>
         /// 강의 시간표 검색 결과를 출력하는 메소드입니다.
         /// </summary>
@@ -273,7 +283,7 @@ namespace EnSharpPortal.Source.IO
         /// 관심과목으로 담겨진 강의 시간표들을 출력하는 메소드입니다.
         /// </summary>
         /// <param name="basket">관심과목 수업 리스트</param>
-        public void LectureInBasket(List<ClassVO> basket)
+        public void SelectedLecture(List<ClassVO> basket, int mode)
         {
             Console.SetCursorPosition(120, 2);
             foreach (string title in Constants.ENSHARP_TITLE_IN_SEARCH_MODE)
@@ -283,8 +293,9 @@ namespace EnSharpPortal.Source.IO
             }
 
             Console.SetCursorPosition(7, 3);
-            Console.Write("| 관심과목 관리 |");
-
+            if (mode == Constants.MANAGE_BASKET) Console.Write("| 관심과목 관리 |");
+            else Console.Write("| 내 시간표 관리 |");
+            
             Console.SetCursorPosition(0, 6);
             foreach (string guideline in Constants.LECTURE_SCHEDULE_GUIDELINE) Console.WriteLine(guideline);
             Console.SetCursorPosition(1, 7);
@@ -297,6 +308,110 @@ namespace EnSharpPortal.Source.IO
         {
             Console.SetCursorPosition(cursorLeft, cursorTop);
             Console.Write(Constants.SIGN_UP_CLASSES_SELECTION[index] + " | ");
+        }
+
+        public void MyLectureSchedule(List<ClassVO> enrolledLecture)
+        {
+            int color = 0;
+            int cursorLeft, cursorTop;
+            bool isNamePrinted;
+            ConsoleColor colorForLecture;
+
+            Template();
+
+            foreach (ClassVO lecture in enrolledLecture)
+            {
+                colorForLecture = Constants.COLORS[color];
+                if (color == Constants.COLORS.Length - 1) color = 0;
+                else color++;
+                
+                for (int row = 0; row < lecture.TimeOfClass.GetLength(0); row++)
+                {
+                    isNamePrinted = false;
+
+                    for (int column = 0; column < lecture.TimeOfClass.GetLength(1); column++)
+                    {
+                        if (lecture.TimeOfClass[row, column])
+                        {
+                            cursorLeft = (22 * row) + 6;
+                            if (column % 2 == 0) cursorTop = (5 * (column / 2)) + 10;
+                            else cursorTop = (5 * ((column - 1) / 2)) + 12;
+
+                            Console.BackgroundColor = colorForLecture;
+                            Console.SetCursorPosition(cursorLeft, cursorTop);
+                            Console.WriteLine(new string(' ', 20));
+                            Console.SetCursorPosition(cursorLeft, cursorTop + 1);
+                            Console.WriteLine(new string(' ', 20));
+                            if (!isNamePrinted) { LectureName(cursorLeft, cursorTop, lecture.LectureName); isNamePrinted = true; }
+                        }
+                    }
+                }
+            }
+
+            Console.ForegroundColor = ConsoleColor.Gray;
+        }
+
+        public void LectureName(int cursorLeft, int cursorTop, string lectureName)
+        {
+            string name1 = lectureName;
+            string name2 = lectureName;
+            int byteOfName = System.Text.ASCIIEncoding.Unicode.GetByteCount(lectureName);
+            int indexToCut = 0;
+
+            Console.SetCursorPosition(cursorLeft, cursorTop);
+            if (byteOfName > 20)
+            {
+                for (indexToCut = 0; indexToCut < lectureName.Length; indexToCut++)
+                {
+                    int byteOfFrontPartOfName = System.Text.ASCIIEncoding.Unicode.GetByteCount(name1.Remove(indexToCut, lectureName.Length - indexToCut));
+                    if (byteOfFrontPartOfName > 20) break;
+                }
+                name1 = lectureName.Remove(indexToCut, lectureName.Length - indexToCut);
+                name2 = lectureName.Remove(0, indexToCut);
+                Console.Write(name1);
+                Console.SetCursorPosition(cursorLeft, cursorTop + 1);
+                Console.Write(name2);
+            }
+            else Console.Write(lectureName);
+        }
+
+        public void Template()
+        {
+            Console.SetWindowSize(160, 35);
+            Console.Clear();
+
+            Console.SetCursorPosition(120, 2);
+            foreach (string title in Constants.ENSHARP_TITLE_IN_SEARCH_MODE)
+            {
+                Console.WriteLine(title);
+                Console.SetCursorPosition(120, Console.CursorTop);
+            }
+
+            Console.SetCursorPosition(7, 3);
+            Console.Write("| 시간표 열람 |");
+
+            Console.SetCursorPosition(0, 7);
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            foreach (string line in Constants.TEMPLATE1) Console.WriteLine(line);
+            for (int count = 0; count < 12; count++)
+            {
+                foreach (string line in Constants.TEMPLATE1) Console.WriteLine(line);
+                Console.WriteLine(Constants.TEMPLATE1[1] + "\n" + Constants.TEMPLATE1[1] + "\n" + Constants.TEMPLATE1[1]);
+            }
+            Console.WriteLine(Constants.TEMPLATE1[0]);
+
+            Console.SetCursorPosition(0, 8);
+            Console.Write(Constants.TEMPLATE2);
+
+            Console.SetCursorPosition(2, 10);
+            for (int clock = 9; clock < 21; clock++)
+            {
+                if (clock > 12) Console.Write(" " + (clock - 12));
+                else { if (clock < 10) Console.Write(" " + clock); else Console.Write(clock); }
+                Console.SetCursorPosition(2, Console.CursorTop + 5);
+            }
+
+            Console.ForegroundColor = ConsoleColor.Gray;
         }
 
         /// <summary>

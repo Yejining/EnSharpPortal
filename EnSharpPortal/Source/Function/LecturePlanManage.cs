@@ -76,7 +76,8 @@ namespace EnSharpPortal.Source.Function
                     professor = getValue.Information(Console.CursorLeft, Console.CursorTop, Constants.PROFESSOR, 8); if (string.Compare(professor, "@입력취소@") == 0) return null;
                     break;
                 case Constants.BASKET:
-                    break;
+                    print.SearchedLectureSchedule(Constants.SIGN_UP_CLASS, searchMethod, basket, department, serialNumber, lectureName, grade, professor);
+                    return PutLectureInBasket(basket, Constants.SIGN_UP_CLASS);
             }
 
             classes = getValue.SearchLectureByCondition(classes, department, serialNumber, lectureName, grade, professor);
@@ -105,7 +106,7 @@ namespace EnSharpPortal.Source.Function
 
                 if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(2, cursorTop, 1, '▷');
                 else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(2, cursorTop, classes.Count, 1, '▷');
-                else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(2, "▷"); break; }
+                else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(2, "▷"); return classToPutBasket; }
                 else if (keyInfo.Key == ConsoleKey.Enter)
                 {
                     if (getValue.IsValidLecture(classes[Console.CursorTop - cursorTop], classToPutBasket, mode))
@@ -117,8 +118,6 @@ namespace EnSharpPortal.Source.Function
                 }
                 else print.BlockCursorMove(2, "▷");
             }
-
-            return classToPutBasket;
         }
 
         /// <summary>
@@ -126,7 +125,7 @@ namespace EnSharpPortal.Source.Function
         /// </summary>
         /// <param name="basket">관심과목에 담은 강의 리스트</param>
         /// <returns>갱신된 관심과목 강의 리스트</returns>
-        public List<ClassVO> LookAroundBasket(List<ClassVO> basket)
+        public List<ClassVO> ManageSelectedLecture(List<ClassVO> selectedLecture, int mode)
         {
             ConsoleKeyInfo keyInfo;
             bool isFirstLoop = true;
@@ -134,7 +133,7 @@ namespace EnSharpPortal.Source.Function
             Console.SetWindowSize(160, 35);
             Console.Clear();
 
-            print.LectureInBasket(basket);
+            print.SelectedLecture(selectedLecture, mode);
 
             while (true)
             {
@@ -148,20 +147,76 @@ namespace EnSharpPortal.Source.Function
                 keyInfo = Console.ReadKey();
 
                 if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(2, 9, 1, '▷');
-                else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(2, 9, basket.Count, 1, '▷');
+                else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(2, 9, selectedLecture.Count, 1, '▷');
                 else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(2, "▷"); break; }
                 else if (keyInfo.Key == ConsoleKey.Enter)
                 {
                     print.CompletePutOrDeleteLectureInBasket(1, Console.CursorTop, Constants.DELETE);
-                    for (int count = 0; count < basket.Count; count++) { Console.SetCursorPosition(0, 9 + count); print.ClearCurrentConsoleLine(); }
-                    basket.RemoveAt(Console.CursorTop - 10);
-                    print.Lectures(basket, 9);
+                    for (int count = 0; count < selectedLecture.Count; count++) { Console.SetCursorPosition(0, 9 + count); print.ClearCurrentConsoleLine(); }
+                    selectedLecture.RemoveAt(Console.CursorTop - 10);
+                    print.Lectures(selectedLecture, 9);
                     isFirstLoop = true;
                 }
                 else print.BlockCursorMove(2, "▷");
             }
 
-            return basket;
+            return selectedLecture;
         }
-    }
+
+        public List<ClassVO> ManageEnrolledLecture(List<ClassVO> enrolledLecture) 
+        {
+            ConsoleKeyInfo keyInfo;
+            bool isFirstLoop = true;
+
+            while (true)
+            {
+                if (isFirstLoop)
+                {
+                    // 메뉴 출력
+                    print.ManageEnrolledLectureMenu();
+
+                    // 기능 선택
+                    Console.SetCursorPosition(10, 12);
+                    Console.Write('▷');
+
+                    isFirstLoop = false;
+                }
+
+                keyInfo = Console.ReadKey();
+
+                if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(10, 12, 3, '▷');
+                else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(10, 12, 3, 3, '▷');
+                else if (keyInfo.Key == ConsoleKey.Escape) return enrolledLecture;
+                else if (keyInfo.Key == ConsoleKey.Enter) { enrolledLecture = GoNextFunction((Console.CursorTop - 12) / 3, enrolledLecture); isFirstLoop = true; }
+                else print.BlockCursorMove(10, "▷");
+            }
+        }
+
+        public List<ClassVO> GoNextFunction(int cursorTop, List<ClassVO> enrolledLecture)
+        {
+            switch (cursorTop)
+            {
+                case Constants.INQUIRE_MY_LECTURE_SCHEDULE:
+                    print.MyLectureSchedule(enrolledLecture);
+                    break;
+                case Constants.SAVE_MY_LECTURE_SCHEDULE:
+                    //SaveMyLectureSchedule(enrolledLecture);
+                    break;
+                case Constants.MANAGE_MY_LECTURE_SCHEDULE:
+                    return ManageSelectedLecture(enrolledLecture, Constants.MANAGE_MY_LECTURE_SCHEDULE);
+            }
+
+            ConsoleKeyInfo keyInfo = new ConsoleKeyInfo();
+
+            while (true)
+            {
+                keyInfo = Console.ReadKey();
+                if (keyInfo.Key == ConsoleKey.Enter) break;
+            }
+
+            return enrolledLecture;
+        }
+
+
+     }
 }

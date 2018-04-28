@@ -85,12 +85,13 @@ namespace EnSharpPortal.Source.Main
                     basket = lecturePlanManage.InquireLectureSchedule(Constants.PUT_LECTURE_IN_BASKET, classes, basket);
                     return;
                 case Constants.MANAGE_BASKET:
-                    basket = lecturePlanManage.LookAroundBasket(basket);
+                    basket = lecturePlanManage.ManageSelectedLecture(basket, Constants.MANAGE_BASKET);
                     return;
                 case Constants.REGISTER_LECTURE:
                     enrolledLecture = lecturePlanManage.InquireLectureSchedule(Constants.SIGN_UP_CLASS, classes, basket);
                     return;
                 case Constants.CHECK_MY_SCHEDULE:
+                    enrolledLecture = lecturePlanManage.ManageEnrolledLecture(enrolledLecture);
                     return;
                 case Constants.INFORMATION_ABOUT_PORTAL:
                     return;
