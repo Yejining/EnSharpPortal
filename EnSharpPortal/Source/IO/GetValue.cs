@@ -228,8 +228,9 @@ namespace EnSharpPortal.Source.IO
             int index = 0;
             string[] option;
 
-            if (mode == Data.Constants.SELECT_DEPARTMENT) option = Data.Constants.DEPARTMENT;
-            else option = Data.Constants.GRADE;
+            if (mode == Constants.SELECT_DEPARTMENT) option = Constants.DEPARTMENT;
+            else if (mode == Constants.SELECT_GRADE) option = Constants.GRADE;
+            else option = Constants.SIGN_UP_CLASSES_SELECTION;
 
             while (true)
             {
@@ -246,6 +247,7 @@ namespace EnSharpPortal.Source.IO
                     case ConsoleKey.Escape:
                         return -1;
                     case ConsoleKey.Enter:
+                        if (mode == Constants.SIGN_UP_CLASS) print.Category(6, cursorTop + 2, index);
                         return index;
                     case ConsoleKey.DownArrow:
                         if (index == option.Length - 1) index = 0;
@@ -448,7 +450,7 @@ namespace EnSharpPortal.Source.IO
         /// <param name="lecture">검사하고 싶은 수업</param>
         /// <param name="classes">신청한 수업들</param>
         /// <returns>신청 과목 유효 여부</returns>
-        public bool IsValidLecture(ClassVO lecture, List<ClassVO> classes)
+        public bool IsValidLecture(ClassVO lecture, List<ClassVO> classes, int mode)
         {
             float sumOfCredit = 0;
 
@@ -461,7 +463,8 @@ namespace EnSharpPortal.Source.IO
                 if (IsOverLapClass(lecture, selectedClass)) return false;
             }
 
-            if (sumOfCredit > 24) return false;
+            if (mode != Constants.SIGN_UP_CLASS && sumOfCredit > 24) return false;
+            if (mode == Constants.SIGN_UP_CLASS && sumOfCredit > 21) return false;
 
             return true;
         }

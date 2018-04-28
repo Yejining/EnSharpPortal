@@ -21,6 +21,7 @@ namespace EnSharpPortal.Source.Main
 
         private int userNumber;
         private List<ClassVO> basket = new List<ClassVO>();
+        private List<ClassVO> enrolledLecture = new List<ClassVO>();
 
         public void RunPortal()
         {
@@ -78,15 +79,16 @@ namespace EnSharpPortal.Source.Main
                 case Constants.APPLICATION_FOR_CHANGING_REGISTER:
                     return;
                 case Constants.INQUIRE_LECTURE_SCHEDULE:
-                    lecturePlanManage.InquireLectureSchedule(Constants.PUT_LECTURE_IN_BASKET, classes);
+                    lecturePlanManage.InquireLectureSchedule(Constants.PUT_LECTURE_IN_BASKET, classes, basket);
                     return;
                 case Constants.PUT_INTO_BASKET:
-                    basket = lecturePlanManage.InquireLectureSchedule(Constants.PUT_LECTURE_IN_BASKET, classes);
+                    basket = lecturePlanManage.InquireLectureSchedule(Constants.PUT_LECTURE_IN_BASKET, classes, basket);
                     return;
                 case Constants.MANAGE_BASKET:
                     basket = lecturePlanManage.LookAroundBasket(basket);
                     return;
                 case Constants.REGISTER_LECTURE:
+                    enrolledLecture = lecturePlanManage.InquireLectureSchedule(Constants.SIGN_UP_CLASS, classes, basket);
                     return;
                 case Constants.CHECK_MY_SCHEDULE:
                     return;

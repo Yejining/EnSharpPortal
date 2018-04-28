@@ -109,15 +109,18 @@ namespace EnSharpPortal.Source.IO
             SetWindowSmallSize();
 
             Console.SetCursorPosition(0, 3);
-            PrintSentences(Data.Constants.ENSHARP_TITLE);
+            PrintSentences(Constants.ENSHARP_TITLE);
             Console.SetCursorPosition(0, 8);
-            PrintSentence(Data.Constants.LECTURE_SEARCH_MENU[mode]);
+            PrintSentence(Constants.LECTURE_SEARCH_MENU[mode]);
             PrintLectureSearchMenuAndOption(mode);
         }
-        
+
         public void PrintLectureSearchMenuAndOption(int mode)
         {
             Console.SetCursorPosition(6, 11);
+
+            if (mode == Constants.SIGN_UP_CLASS) { Console.Write("수강신청 검색 | "); return; }
+
             for (int sentence = 0; sentence < Constants.SEARCHING_MENU.Length; sentence++)
             {
                 if (sentence % 2 == 0)
@@ -143,13 +146,14 @@ namespace EnSharpPortal.Source.IO
         /// <param name="lectureName">사용자가 검색시 입력한 강의명</param>
         /// <param name="grade">사용자가 검색시 선택한 학년</param>
         /// <param name="professor">사용자가 검색시 입력한 교수명</param>
-        public void SearchedLectureSchedule(List<ClassVO> classes, int department, string serialNumber, string lectureName, int grade, string professor)
+        public void SearchedLectureSchedule(int mode, int searchMethod, List<ClassVO> classes, int department, string serialNumber, string lectureName, int grade, string professor)
         {
             Console.SetWindowSize(160, 35);
             Console.Clear();
 
-            LectureScheduleTitle(department, serialNumber, lectureName, grade, professor);
+            LectureScheduleTitle(mode, searchMethod,department, serialNumber, lectureName, grade, professor);
             Console.SetCursorPosition(0, 9);
+            if (mode == Constants.SIGN_UP_CLASS) Console.SetCursorPosition(0, 6);
             foreach (string guideline in Constants.LECTURE_SCHEDULE_GUIDELINE) Console.WriteLine(guideline);
 
             Lectures(classes, Console.CursorTop);
@@ -206,7 +210,7 @@ namespace EnSharpPortal.Source.IO
         /// <param name="lectureName">사용자가 검색시 입력한 강의명</param>
         /// <param name="grade">사용자가 검색시 선택한 학년</param>
         /// <param name="professor">사용자가 검색시 입력한 교수명</param>
-        public void LectureScheduleTitle(int department, string serialNumber, string lectureName, int grade, string professor)
+        public void LectureScheduleTitle(int mode, int searchMethod, int department, string serialNumber, string lectureName, int grade, string professor)
         {
             List<string> searchingCondition = new List<string>();
 
@@ -225,6 +229,14 @@ namespace EnSharpPortal.Source.IO
             searchingCondition.Add(Constants.GRADE[grade]);
             if (string.Compare(professor, "") == 0) professor = string.Copy("전체");
             searchingCondition.Add(professor);
+            
+            Console.SetCursorPosition(7, 3);
+            if (mode == Constants.SIGN_UP_CLASS)
+            {
+                Console.Write("수강신청 검색 | " + Constants.SIGN_UP_CLASSES_SELECTION[searchMethod]);
+                if (searchMethod != Constants.BASKET) Console.Write(" | " + searchingCondition[searchMethod]);
+                return;
+            }
 
             Console.SetCursorPosition(7, 2);
             for (int item = 0; item < Constants.SEARCHING_MENU_IN_SEARCHING_MODE.Count(); item++)
@@ -279,6 +291,12 @@ namespace EnSharpPortal.Source.IO
             Console.Write("삭제");
 
             Lectures(basket, 9);
+        }
+
+        public void Category(int cursorLeft, int cursorTop, int index)
+        {
+            Console.SetCursorPosition(cursorLeft, cursorTop);
+            Console.Write(Constants.SIGN_UP_CLASSES_SELECTION[index] + " | ");
         }
 
         /// <summary>

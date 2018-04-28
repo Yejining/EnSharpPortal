@@ -50,7 +50,7 @@ namespace EnSharpPortal.Source.Data
             "관 심 과 목   담 기","",
             "관 심 과 목   관 리","",
             "수   강     신   청","",
-            "내  시 간 표  조 회","",
+            "내  시 간 표  관 리","",
             "포 탈  이 용  안 내","",
             "로   그     아   웃"
         };
@@ -126,7 +126,6 @@ namespace EnSharpPortal.Source.Data
             "-----------------------------------------------------------------------------------------------------------------------------------------------------------"
         };
         
-
         public const int ID = 1;
         public const int PASSWORD = 2;
 
@@ -159,6 +158,7 @@ namespace EnSharpPortal.Source.Data
 
         public const int SELECT_DEPARTMENT = 0;
         public const int SELECT_GRADE = 1;
+        public const int SELECT_SEARCH_METHOD = 2;
 
         public const int STUDENT_INFORMATION = 0;
         public const int CHANGE_PASSWORD = 1;
@@ -174,5 +174,12 @@ namespace EnSharpPortal.Source.Data
         public const int PUT = 0;
         public const int DELETE = 1;
         public const int FAIL = 2;
+
+        public const int MAJOR = 0;
+        public const int NUMBER = 1;
+        public const int NAME = 2;
+        public const int YEAR = 3;
+        public const int PROFESSOR_NAME = 4;
+        public const int BASKET = 5;
     }
 }
