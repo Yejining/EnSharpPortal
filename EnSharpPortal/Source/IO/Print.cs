@@ -147,6 +147,20 @@ namespace EnSharpPortal.Source.IO
             PrintSentences(Constants.MY_SCHEDULE_MENU);
         }
 
+        public void SaveLectureIntoFileBackground()
+        {
+            SetWindowSmallSize();
+            Console.SetCursorPosition(0, 3);
+            PrintSentences(Constants.ENSHARP_TITLE);
+            Console.SetCursorPosition(0, 8);
+            PrintSentence("-시간표 저장-");
+            Console.SetCursorPosition(3, 11);
+            Console.Write("저장할 시간표 이름| ");
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.Write("10자 이내 문자, 숫자");
+            Console.ForegroundColor = ConsoleColor.Gray;
+        }
+
         /// <summary>
         /// 강의 시간표 검색 결과를 출력하는 메소드입니다.
         /// </summary>
@@ -313,8 +327,6 @@ namespace EnSharpPortal.Source.IO
         public void MyLectureSchedule(List<ClassVO> enrolledLecture)
         {
             int color = 0;
-            int cursorLeft, cursorTop;
-            bool isNamePrinted;
             ConsoleColor colorForLecture;
 
             Template();
@@ -327,28 +339,86 @@ namespace EnSharpPortal.Source.IO
                 
                 for (int row = 0; row < lecture.TimeOfClass.GetLength(0); row++)
                 {
-                    isNamePrinted = false;
-
-                    for (int column = 0; column < lecture.TimeOfClass.GetLength(1); column++)
-                    {
-                        if (lecture.TimeOfClass[row, column])
-                        {
-                            cursorLeft = (22 * row) + 6;
-                            if (column % 2 == 0) cursorTop = (5 * (column / 2)) + 10;
-                            else cursorTop = (5 * ((column - 1) / 2)) + 12;
-
-                            Console.BackgroundColor = colorForLecture;
-                            Console.SetCursorPosition(cursorLeft, cursorTop);
-                            Console.WriteLine(new string(' ', 20));
-                            Console.SetCursorPosition(cursorLeft, cursorTop + 1);
-                            Console.WriteLine(new string(' ', 20));
-                            if (!isNamePrinted) { LectureName(cursorLeft, cursorTop, lecture.LectureName); isNamePrinted = true; }
-                        }
-                    }
+                    ColorLectureTimeTable(lecture, row, colorForLecture);
+                    WriteLectureNameAndPlce(lecture, row);
                 }
             }
 
-            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.BackgroundColor = ConsoleColor.Black;
+        }
+
+        public void WriteLectureNameAndPlce(ClassVO lecture, int row)
+        {
+            int cursorLeft, cursorTop;
+            bool isNamePrinted;
+            bool isFirstLectureRoomPrinted, isSecondLectureRoomPrinted;
+
+            isNamePrinted = false;
+            isFirstLectureRoomPrinted = false;
+            isSecondLectureRoomPrinted = false;
+
+            for (int column = 0; column < lecture.TimeOfClass.GetLength(1); column++)
+            {
+                if (lecture.TimeOfClass[row, column])
+                {
+                    cursorLeft = (22 * row) + 6;
+                    if (column % 2 == 0) cursorTop = (5 * (column / 2)) + 10;
+                    else cursorTop = (5 * ((column - 1) / 2)) + 12;
+
+                    if (!isNamePrinted) { LectureName(cursorLeft, cursorTop, lecture.LectureName); isNamePrinted = true; }
+                    if (isNamePrinted && column == 18) LectureName(cursorLeft, cursorTop, lecture.LectureName);
+                    if (!isFirstLectureRoomPrinted) { LectureRoom(cursorLeft, Console.CursorTop + 1, lecture.ClassRooms[0]); isFirstLectureRoomPrinted = true; }
+                    if (cursorTop > 52 && isFirstLectureRoomPrinted && !isSecondLectureRoomPrinted && lecture.ClassRooms.Count == 2) { LectureRoom(cursorLeft, Console.CursorTop + 1, lecture.ClassRooms[1]); isSecondLectureRoomPrinted = true; }
+                }
+            }
+        }
+
+        public void ColorLectureTimeTable(ClassVO lecture, int row, ConsoleColor colorForLecture)
+        {
+            int cursorLeft, cursorTop;
+
+            for (int column = 0; column < lecture.TimeOfClass.GetLength(1); column++)
+            {
+                if (lecture.TimeOfClass[row, column])
+                {
+                    cursorLeft = (22 * row) + 6;
+                    if (column % 2 == 0) cursorTop = (5 * (column / 2)) + 10;
+                    else cursorTop = (5 * ((column - 1) / 2)) + 12;
+
+                    Console.BackgroundColor = colorForLecture;
+                    Console.SetCursorPosition(cursorLeft, cursorTop);
+                    Console.WriteLine(new string(' ', 20));
+                    Console.SetCursorPosition(cursorLeft, cursorTop + 1);
+                    Console.WriteLine(new string(' ', 20));
+                    if (CountOfDayOfWeek(lecture.LectureSchedule) < 3 && lecture.TimeOfClass[row, column + 1])
+                    {
+                        Console.SetCursorPosition(cursorLeft, cursorTop + 2);
+                        Console.WriteLine(new string(' ', 20));
+                    }
+                    else if (CountOfDayOfWeek(lecture.LectureSchedule) == 3 && lecture.TimeOfClass[row, column + 1] && cursorTop != 52)
+                    {
+                        Console.SetCursorPosition(cursorLeft, cursorTop + 2);
+                        Console.WriteLine(new string(' ', 20));
+                    }
+                }
+            }
+        }
+
+        public void LectureRoom(int cursorLeft, int cursorTop, string lectureRoom)
+        {
+            Console.SetCursorPosition(cursorLeft, cursorTop);
+            Console.Write(lectureRoom);
+        }
+
+        public int CountOfDayOfWeek(string lectureTime)
+        {
+            int count = 0;
+            string pattern = "[가-힣]";
+
+            foreach (char day in lectureTime)
+                if (System.Text.RegularExpressions.Regex.IsMatch(day.ToString(), pattern)) count++;
+
+            return count;
         }
 
         public void LectureName(int cursorLeft, int cursorTop, string lectureName)

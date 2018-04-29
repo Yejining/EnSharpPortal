@@ -194,7 +194,7 @@ namespace EnSharpPortal.Source.IO
                 if (classroom[i] == '/')
                 {
                     room1.Remove(i, classroom.Length - i);
-                    room2.Remove(0, i);
+                    room2.Remove(0, i + 1);
 
                     classRoom.Add(room1.ToString());
                     classRoom.Add(room2.ToString());
@@ -483,5 +483,7 @@ namespace EnSharpPortal.Source.IO
                         return true;
             return false;
         }
+
+        
     }
 }

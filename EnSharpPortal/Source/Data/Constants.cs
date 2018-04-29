@@ -183,6 +183,7 @@ namespace EnSharpPortal.Source.Data
         public const int SERIAL_NUMBER = 3;
         public const int LECTURE_NAME = 5;
         public const int PROFESSOR = 9;
+        public const int FILE_NAME = 10;
 
         public const int SELECT_DEPARTMENT = 0;
         public const int SELECT_GRADE = 1;

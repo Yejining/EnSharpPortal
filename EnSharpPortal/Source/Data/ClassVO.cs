@@ -108,6 +108,11 @@ namespace EnSharpPortal.Source.Data
             get { return classRoom; }
         }
 
+        public List<string> ClassRooms
+        {
+            get { return classRooms; }
+        }
+
         public string Professor
         {
             get { return professor; }

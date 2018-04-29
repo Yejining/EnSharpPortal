@@ -200,7 +200,7 @@ namespace EnSharpPortal.Source.Function
                     print.MyLectureSchedule(enrolledLecture);
                     break;
                 case Constants.SAVE_MY_LECTURE_SCHEDULE:
-                    //SaveMyLectureSchedule(enrolledLecture);
+                    SaveMyLectureSchedule(enrolledLecture);
                     break;
                 case Constants.MANAGE_MY_LECTURE_SCHEDULE:
                     return ManageSelectedLecture(enrolledLecture, Constants.MANAGE_MY_LECTURE_SCHEDULE);
@@ -208,6 +208,7 @@ namespace EnSharpPortal.Source.Function
 
             ConsoleKeyInfo keyInfo = new ConsoleKeyInfo();
 
+            // 고치기
             while (true)
             {
                 keyInfo = Console.ReadKey();
@@ -217,6 +218,21 @@ namespace EnSharpPortal.Source.Function
             return enrolledLecture;
         }
 
+        public void SaveMyLectureSchedule(List<ClassVO> enrolledLecture)
+        {
+            string fileName;
 
+            print.SaveLectureIntoFileBackground();
+            fileName = getValue.Information(23, 11, Constants.FILE_NAME, 10);
+            if (string.Compare(fileName, "@입력취소@") == 0) return;
+
+            ConsoleKeyInfo keyInfo = new ConsoleKeyInfo();
+
+            while (true)
+            {
+                keyInfo = Console.ReadKey();
+                if (keyInfo.Key == ConsoleKey.Enter) break;
+            }
+        }
      }
 }
