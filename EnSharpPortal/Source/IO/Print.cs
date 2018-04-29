@@ -340,14 +340,14 @@ namespace EnSharpPortal.Source.IO
                 for (int row = 0; row < lecture.TimeOfClass.GetLength(0); row++)
                 {
                     ColorLectureTimeTable(lecture, row, colorForLecture);
-                    WriteLectureNameAndPlce(lecture, row);
+                    WriteLectureNameAndPlace(lecture, row);
                 }
             }
 
             Console.BackgroundColor = ConsoleColor.Black;
         }
 
-        public void WriteLectureNameAndPlce(ClassVO lecture, int row)
+        public void WriteLectureNameAndPlace(ClassVO lecture, int row)
         {
             int cursorLeft, cursorTop;
             bool isNamePrinted;

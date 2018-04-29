@@ -141,6 +141,36 @@ namespace EnSharpPortal.Source.IO
             return destinationArray;
         }
 
+        public int CountOfDayOfWeek(string lectureTime)
+        {
+            int count = 0;
+            string pattern = "[가-힣]";
+
+            foreach (char day in lectureTime)
+                if (System.Text.RegularExpressions.Regex.IsMatch(day.ToString(), pattern)) count++;
+
+            return count;
+        }
+
+        public string[,] LectureInExcelForm(List<ClassVO> enrolledLecture, string[,] excelFile)
+        {
+            excelFile.Initialize();
+            for (int column = 1; column <= 5; column++) excelFile[0, column] = Constants.DAYS[column - 1];
+            for (int row = 1; row <= 24; row++) excelFile[row, 0] = Constants.TIMES[row - 1];
+
+            foreach (ClassVO lecture in enrolledLecture)
+                for (int row = 0; row < 5; row++)
+                    for (int column = 0; column < 24; column++)
+                        if (lecture.TimeOfClass[row, column])
+                        {
+                            if (CountOfDayOfWeek(lecture.LectureSchedule) == 3 && column >= 18)
+                                excelFile[column + 1, row + 1] = lecture.LectureName + "(" + lecture.ClassRooms[1] + ")";
+                            else excelFile[column + 1, row + 1] = lecture.LectureName + "(" + lecture.ClassRooms[0] + ")";
+                        }
+
+            return excelFile;
+        }
+
         public bool[] SetTimeInArray(string lectureTime, int index)
         {
             bool[] timeOfClass = new bool[24];

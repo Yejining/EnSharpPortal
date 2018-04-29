@@ -5,6 +5,7 @@ using System.Text;
 
 using EnSharpPortal.Source.IO;
 using EnSharpPortal.Source.Data;
+using EnSharpPortal.Source.Main;
 
 namespace EnSharpPortal.Source.Function
 {
@@ -13,7 +14,8 @@ namespace EnSharpPortal.Source.Function
         Print print = new Print();
         GetValue getValue = new GetValue();
         Tools tools = new Tools();
-        
+        FileIOManager fileIOManager = new FileIOManager();
+
         /// <summary>
         /// 강의 시간표를 조회하는 메소드입니다.
         /// 강의 시간표 조회, 관심과목 담기, 수강신청 기능에서 사용됩니다.
@@ -221,18 +223,14 @@ namespace EnSharpPortal.Source.Function
         public void SaveMyLectureSchedule(List<ClassVO> enrolledLecture)
         {
             string fileName;
+            string[,] excelFile = new string[25, 6];
 
             print.SaveLectureIntoFileBackground();
+
             fileName = getValue.Information(23, 11, Constants.FILE_NAME, 10);
-            if (string.Compare(fileName, "@입력취소@") == 0) return;
+            excelFile = getValue.LectureInExcelForm(enrolledLecture, excelFile);
 
-            ConsoleKeyInfo keyInfo = new ConsoleKeyInfo();
-
-            while (true)
-            {
-                keyInfo = Console.ReadKey();
-                if (keyInfo.Key == ConsoleKey.Enter) break;
-            }
+            fileIOManager.CreateExcelFile(fileName, excelFile);
         }
      }
 }
