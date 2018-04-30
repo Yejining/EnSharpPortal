@@ -116,6 +116,22 @@ namespace EnSharpPortal.Source.IO
             Console.ForegroundColor = ConsoleColor.Gray;
         }
 
+        public void ColorMenu(string menu, int grayCursorTop, int modeToHighlight, int highlightCursorTop)
+        {
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.SetCursorPosition(6, grayCursorTop);
+            Console.Write(menu);
+
+            if (modeToHighlight != Constants.NONE)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.SetCursorPosition(6, highlightCursorTop);
+                if (modeToHighlight != Constants.CHECK) Console.Write(Constants.SEARCHING_MENU[modeToHighlight - 1]);
+                else { Console.SetCursorPosition(10, highlightCursorTop); Console.Write("강의시간표 조회하기(엔터)"); }
+                Console.ForegroundColor = ConsoleColor.Gray;
+            }
+        }
+
         /// <summary>
         /// 강의시간표를 조회할 때의 메뉴를 출력하는 메소드입니다.
         /// </summary>
@@ -135,7 +151,13 @@ namespace EnSharpPortal.Source.IO
         {
             Console.SetCursorPosition(6, 11);
 
-            if (mode == Constants.SIGN_UP_CLASS) { Console.Write("수강신청 검색 | "); return; }
+            if (mode == Constants.SIGN_UP_CLASS)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write("수강신청 검색 | ");
+                Console.ForegroundColor = ConsoleColor.Gray;
+                return;
+            }
 
             for (int sentence = 0; sentence < Constants.SEARCHING_MENU.Length; sentence++)
             {

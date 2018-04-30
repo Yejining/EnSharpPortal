@@ -75,6 +75,8 @@ namespace EnSharpPortal.Source.Function
         public List<ClassVO> SignUpLecture(List<ClassVO> lectureSchedule, List<ClassVO> basket, List<ClassVO> enrolledLecture)
         {
             List<ClassVO> searchedLecture = new List<ClassVO>();
+            int next;
+            string menu = "";
             int department = 0;
             string serialNumber = "0";
             string lectureName = "";
@@ -84,40 +86,68 @@ namespace EnSharpPortal.Source.Function
 
             print.LectureSearchMenu(Constants.SIGN_UP_CLASS);
 
-            searchMethod = getValue.DropBox(22, 11, Constants.SIGN_UP_CLASS);
-            if (searchMethod == -1) return enrolledLecture;
-
-            switch (searchMethod)
+            while (true)
             {
-                case Constants.MAJOR:
-                    department = getValue.DropBox(Console.CursorLeft, Console.CursorTop, Constants.SELECT_DEPARTMENT);
-                    if (department == -1) return enrolledLecture;
+                searchMethod = getValue.DropBox(22, 11, Constants.SIGN_UP_CLASS);
+                if (searchMethod == -1) return enrolledLecture;
+
+                print.ColorMenu("수강신청 검색 | ", 11, Constants.NONE, Constants.NONE);
+                Console.SetCursorPosition(0, Console.CursorTop + 2);
+                menu = getValue.MenuWord(searchMethod);
+
+                switch (searchMethod)
+                {
+                    case Constants.MAJOR:
+                        print.ColorMenu(Constants.NONE, Constants.NONE, Constants.SELECT_DEPARTMENT + 1, Console.CursorTop);
+                        department = getValue.DropBox(Console.CursorLeft, Console.CursorTop, Constants.SELECT_DEPARTMENT);
+                        if (department == -1) return enrolledLecture;
+                        break;
+                    case Constants.NUMBER:
+                        print.ColorMenu(Constants.NONE, Constants.NONE, Constants.SERIAL_NUMBER, Console.CursorTop);
+                        serialNumber = getValue.Information(Console.CursorLeft, Console.CursorTop, Constants.SERIAL_NUMBER, 6);
+                        if (string.Compare(serialNumber, "@입력취소@") == 0) return enrolledLecture;
+                        break;
+                    case Constants.NAME:
+                        print.ColorMenu(Constants.NONE, Constants.NONE, Constants.LECTURE_NAME, Console.CursorTop);
+                        lectureName = getValue.Information(Console.CursorLeft, Console.CursorTop, Constants.LECTURE_NAME, 10);
+                        if (string.Compare(lectureName, "@입력취소@") == 0) return enrolledLecture;
+                        break;
+                    case Constants.YEAR:
+                        print.ColorMenu(Constants.NONE, Constants.NONE, Constants.SELECT_GRADE + 6, Console.CursorTop);
+                        grade = getValue.DropBox(Console.CursorLeft, Console.CursorTop, Constants.SELECT_GRADE);
+                        if (grade == -1) return enrolledLecture;
+                        break;
+                    case Constants.PROFESSOR:
+                        print.ColorMenu(Constants.NONE, Constants.NONE, Constants.PROFESSOR, Console.CursorTop);
+                        professor = getValue.Information(Console.CursorLeft, Console.CursorTop, Constants.PROFESSOR, 8);
+                        if (string.Compare(professor, "@입력취소@") == 0) return enrolledLecture;
+                        break;
+                    case Constants.BASKET:
+                        print.SearchedLectureSchedule(Constants.SIGN_UP_CLASS, searchMethod, basket, department, serialNumber, lectureName, grade, professor);
+                        return PutLectureInBasketOrSignUpLecture(Constants.SIGN_UP_CLASS, basket);
+                }
+                
+                print.ColorMenu(menu, 13, Constants.CHECK, 16);
+
+                next = getValue.EnterOrTab();
+                if (next == Constants.ENTER)
+                {
+                    Console.SetCursorPosition(0, 25);
+                    print.ClearCurrentConsoleLine();
                     break;
-                case Constants.NUMBER:
-                    serialNumber = getValue.Information(Console.CursorLeft, Console.CursorTop, Constants.SERIAL_NUMBER, 6);
-                    if (string.Compare(serialNumber, "@입력취소@") == 0) return enrolledLecture;
-                    break;
-                case Constants.NAME:
-                    lectureName = getValue.Information(Console.CursorLeft, Console.CursorTop, Constants.LECTURE_NAME, 10);
-                    if (string.Compare(lectureName, "@입력취소@") == 0) return enrolledLecture;
-                    break;
-                case Constants.YEAR:
-                    grade = getValue.DropBox(Console.CursorLeft, Console.CursorTop, Constants.SELECT_GRADE);
-                    if (grade == -1) return enrolledLecture;
-                    break;
-                case Constants.PROFESSOR:
-                    professor = getValue.Information(Console.CursorLeft, Console.CursorTop, Constants.PROFESSOR, 8);
-                    if (string.Compare(professor, "@입력취소@") == 0) return enrolledLecture;
-                    break;
-                case Constants.BASKET:
-                    print.SearchedLectureSchedule(Constants.SIGN_UP_CLASS, searchMethod, basket, department, serialNumber, lectureName, grade, professor);
-                    return PutLectureInBasketOrSignUpLecture(Constants.SIGN_UP_CLASS, basket);
+                }
+                if (next == Constants.ESCAPE) return enrolledLecture;
+                if (next == Constants.TAB)
+                {
+                    Console.SetCursorPosition(0, 13);
+                    print.ClearCurrentConsoleLine();
+                    Console.SetCursorPosition(0, 16);
+                    print.ClearCurrentConsoleLine();
+                }
             }
-
-            searchedLecture = getValue.SearchLectureByCondition(Constants.SIGN_UP_CLASS, lectureSchedule, enrolledLecture, department, serialNumber, lectureName, grade, professor);
-
             
-
+            searchedLecture = getValue.SearchLectureByCondition(Constants.SIGN_UP_CLASS, lectureSchedule, enrolledLecture, department, serialNumber, lectureName, grade, professor);
+            
             print.SearchedLectureSchedule(Constants.SIGN_UP_CLASS, searchMethod, searchedLecture, department, serialNumber, lectureName, grade, professor);
             return PutLectureInBasketOrSignUpLecture(Constants.SIGN_UP_CLASS, searchedLecture);
         }

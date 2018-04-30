@@ -291,9 +291,29 @@ namespace EnSharpPortal.Source.IO
                         else index++;
                         break;
                     default:
+                        print.BlockCursorMove(cursorLeft + 4, "");
                         keyInfo = Console.ReadKey();
                         break;
                 }
+            }
+        }
+
+        public string MenuWord(int mode)
+        {
+            switch (mode)
+            {
+                case Constants.MAJOR:
+                    return Constants.SEARCHING_MENU[0];
+                case Constants.NUMBER:
+                    return Constants.SEARCHING_MENU[2];
+                case Constants.NAME:
+                    return Constants.SEARCHING_MENU[4];
+                case Constants.YEAR:
+                    return Constants.SEARCHING_MENU[6];
+                case Constants.PROFESSOR:
+                    return Constants.SEARCHING_MENU[8];
+                default:
+                    return "";
             }
         }
 
@@ -325,6 +345,7 @@ namespace EnSharpPortal.Source.IO
             StringBuilder answer = new StringBuilder();
             ConsoleKeyInfo keyInfo = new ConsoleKeyInfo();
 
+            print.SearchGuideline(Constants.SEARCHING_MENU[mode], cursorLeft, cursorTop);
             Console.SetCursorPosition(cursorLeft, cursorTop);
 
             while (true)
