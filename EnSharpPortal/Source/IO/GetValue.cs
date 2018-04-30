@@ -279,6 +279,10 @@ namespace EnSharpPortal.Source.IO
                     case ConsoleKey.Enter:
                         if (mode == Constants.SIGN_UP_CLASS) print.Category(6, cursorTop + 2, index);
                         return index;
+                    case ConsoleKey.UpArrow:
+                        if (index == 0) index = option.Length - 1;
+                        else index--;
+                        break;
                     case ConsoleKey.DownArrow:
                         if (index == option.Length - 1) index = 0;
                         else index++;

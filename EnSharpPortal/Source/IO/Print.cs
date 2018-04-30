@@ -491,7 +491,7 @@ namespace EnSharpPortal.Source.IO
         {
             Console.Clear();
             Console.SetWindowSize(45, 30);
-            Console.SetWindowPosition(5, 5);
+            //Console.SetWindowPosition(5, 5);
         }
 
         /// <summary>
