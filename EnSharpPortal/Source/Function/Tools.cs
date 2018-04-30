@@ -25,5 +25,18 @@ namespace EnSharpPortal.Source.Function
             if (Console.CursorTop < startingLine + (interval * (countOfOption - 1))) Console.SetCursorPosition(cursorLocation, Console.CursorTop + interval);
             Console.Write(pointer);
         }
+
+        public void WaitUntilGetEscapeKey()
+        {
+            ConsoleKeyInfo keyInfo;
+
+            while (true)
+            {
+                keyInfo = Console.ReadKey();
+
+                if (keyInfo.Key == ConsoleKey.Enter) return;
+                else print.BlockCursorMove(Console.CursorLeft - 1, " ");
+            }
+        }
     }
 }

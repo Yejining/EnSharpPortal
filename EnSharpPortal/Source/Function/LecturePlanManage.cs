@@ -22,8 +22,9 @@ namespace EnSharpPortal.Source.Function
         /// </summary>
         /// <param name="mode">기능</param>
         /// <param name="classes">강의 시간표</param>
-        public List<ClassVO> InquireLectureSchedule(int mode, List<ClassVO> classes, List<ClassVO> basket)
+        public List<ClassVO> InquireLectureSchedule(int mode, List<ClassVO> lectureSchedule, List<ClassVO> basket)
         {
+            List<ClassVO> searchedLecture = new List<ClassVO>();
             int department;
             string serialNumber;
             string lectureName;
@@ -31,26 +32,27 @@ namespace EnSharpPortal.Source.Function
             string professor;
 
             print.LectureSearchMenu(mode);
-
-            if (mode == Constants.SIGN_UP_CLASS) return SignUpClass(classes, basket);
             
-            department = getValue.DropBox(21, 11, Constants.SELECT_DEPARTMENT); if (department == -1) return null;
-            serialNumber = getValue.Information(17, 13, Constants.SERIAL_NUMBER, 6); if (string.Compare(serialNumber, "@입력취소@") == 0) return null;
-            lectureName = getValue.Information(17, 15, Constants.LECTURE_NAME, 10); if (string.Compare(lectureName, "@입력취소@") == 0) return null;
-            grade = getValue.DropBox(17, 17, Constants.SELECT_GRADE); if (grade == -1) return null;
-            professor = getValue.Information(17, 19, Constants.PROFESSOR, 8); if (string.Compare(professor, "@입력취소@") == 0) return null;
+            // 강의시간표 조회 혹은 관심과목 담기 모드
+            // - 정보 수집
+            department = getValue.DropBox(21, 11, Constants.SELECT_DEPARTMENT); if (department == -1) return basket;
+            serialNumber = getValue.Information(17, 13, Constants.SERIAL_NUMBER, 6); if (string.Compare(serialNumber, "@입력취소@") == 0) return basket;
+            lectureName = getValue.Information(17, 15, Constants.LECTURE_NAME, 10); if (string.Compare(lectureName, "@입력취소@") == 0) return basket;
+            grade = getValue.DropBox(17, 17, Constants.SELECT_GRADE); if (grade == -1) return basket;
+            professor = getValue.Information(17, 19, Constants.PROFESSOR, 8); if (string.Compare(professor, "@입력취소@") == 0) return basket;
             Console.SetCursorPosition(0, 23);
             print.PrintSentence("강의시간표 조회하기");
 
-            classes = getValue.SearchLectureByCondition(classes, department, serialNumber, lectureName, grade, professor);
-            print.SearchedLectureSchedule(mode, -1, classes, department, serialNumber, lectureName, grade, professor);
-            if (mode == Constants.PUT_LECTURE_IN_BASKET) return PutLectureInBasket(classes, mode);
-            return null;
+            // - 조건 검색 후 관심과목 담기
+            searchedLecture = getValue.SearchLectureByCondition(lectureSchedule, department, serialNumber, lectureName, grade, professor);
+            print.SearchedLectureSchedule(mode, Constants.ALL, searchedLecture, department, serialNumber, lectureName, grade, professor);
+            if (mode == Constants.LECTURE_SEARCH) return lectureSchedule;
+            else return PutLectureInBasketOrSignUpLecture(Constants.PUT_LECTURE_IN_BASKET, searchedLecture);
         }
 
-        public List<ClassVO> SignUpClass(List<ClassVO> classes, List<ClassVO> basket)
+        public List<ClassVO> SignUpLecture(List<ClassVO> lectureSchedule, List<ClassVO> basket, List<ClassVO> enrolledLecture)
         {
-            List<ClassVO> enrolledLecture = new List<ClassVO>();
+            List<ClassVO> searchedLecture = new List<ClassVO>();
             int department = 0;
             string serialNumber = "0";
             string lectureName = "";
@@ -63,37 +65,44 @@ namespace EnSharpPortal.Source.Function
             switch (searchMethod)
             {
                 case Constants.MAJOR:
-                    department = getValue.DropBox(Console.CursorLeft, Console.CursorTop, Constants.SELECT_DEPARTMENT); if (department == -1) return null;
+                    department = getValue.DropBox(Console.CursorLeft, Console.CursorTop, Constants.SELECT_DEPARTMENT);
+                    if (department == -1) return enrolledLecture;
                     break;
                 case Constants.NUMBER:
-                    serialNumber = getValue.Information(Console.CursorLeft, Console.CursorTop, Constants.SERIAL_NUMBER, 6); if (string.Compare(serialNumber, "@입력취소@") == 0) return null;
+                    serialNumber = getValue.Information(Console.CursorLeft, Console.CursorTop, Constants.SERIAL_NUMBER, 6);
+                    if (string.Compare(serialNumber, "@입력취소@") == 0) return enrolledLecture;
                     break;
                 case Constants.NAME:
-                    lectureName = getValue.Information(Console.CursorLeft, Console.CursorTop, Constants.LECTURE_NAME, 10); if (string.Compare(lectureName, "@입력취소@") == 0) return null;
+                    lectureName = getValue.Information(Console.CursorLeft, Console.CursorTop, Constants.LECTURE_NAME, 10);
+                    if (string.Compare(lectureName, "@입력취소@") == 0) return enrolledLecture;
                     break;
                 case Constants.YEAR:
-                    grade = getValue.DropBox(Console.CursorLeft, Console.CursorTop, Constants.SELECT_GRADE); if (grade == -1) return null;
+                    grade = getValue.DropBox(Console.CursorLeft, Console.CursorTop, Constants.SELECT_GRADE);
+                    if (grade == -1) return enrolledLecture;
                     break;
                 case Constants.PROFESSOR:
-                    professor = getValue.Information(Console.CursorLeft, Console.CursorTop, Constants.PROFESSOR, 8); if (string.Compare(professor, "@입력취소@") == 0) return null;
+                    professor = getValue.Information(Console.CursorLeft, Console.CursorTop, Constants.PROFESSOR, 8);
+                    if (string.Compare(professor, "@입력취소@") == 0) return enrolledLecture;
                     break;
                 case Constants.BASKET:
                     print.SearchedLectureSchedule(Constants.SIGN_UP_CLASS, searchMethod, basket, department, serialNumber, lectureName, grade, professor);
-                    return PutLectureInBasket(basket, Constants.SIGN_UP_CLASS);
+                    return PutLectureInBasketOrSignUpLecture(Constants.SIGN_UP_CLASS, basket);
             }
 
-            classes = getValue.SearchLectureByCondition(classes, department, serialNumber, lectureName, grade, professor);
-            print.SearchedLectureSchedule(Constants.SIGN_UP_CLASS, searchMethod, classes, department, serialNumber, lectureName, grade, professor);
-            return PutLectureInBasket(classes, Constants.SIGN_UP_CLASS);
+            searchedLecture = getValue.SearchLectureByCondition(lectureSchedule, department, serialNumber, lectureName, grade, professor);
+            print.SearchedLectureSchedule(Constants.SIGN_UP_CLASS, searchMethod, searchedLecture, department, serialNumber, lectureName, grade, professor);
+            return PutLectureInBasketOrSignUpLecture(Constants.SIGN_UP_CLASS, searchedLecture);
         }
 
         /// <summary>
-        /// 관심과목을 담는 메소드입니다.
+        /// 관심과목을 담기 혹은 수강신청 기능을 수행하는 메소드입니다.
         /// </summary>
-        /// <param name="classes">강의 시간표</param>
-        public List<ClassVO> PutLectureInBasket(List<ClassVO> classes, int mode)
+        /// <param name="mode">관심과목 담기 혹은 수강신청</param>
+        /// <param name="searchedLecture">검색된 강의</param>
+        /// <returns>관심과목으로 지정된 강의 혹은 수강신청된 강의 목록</returns>
+        public List<ClassVO> PutLectureInBasketOrSignUpLecture(int mode, List<ClassVO> searchedLecture)
         {
-            List<ClassVO> classToPutBasket = new List<ClassVO>();
+            List<ClassVO> selectedLecture = new List<ClassVO>();
             int cursorTop;
 
             if (mode != Constants.SIGN_UP_CLASS) cursorTop = 12;
@@ -107,13 +116,13 @@ namespace EnSharpPortal.Source.Function
                 ConsoleKeyInfo keyInfo = Console.ReadKey();
 
                 if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(2, cursorTop, 1, '▷');
-                else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(2, cursorTop, classes.Count, 1, '▷');
-                else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(2, "▷"); return classToPutBasket; }
+                else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(2, cursorTop, searchedLecture.Count, 1, '▷');
+                else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(2, "▷"); return selectedLecture; }
                 else if (keyInfo.Key == ConsoleKey.Enter)
                 {
-                    if (getValue.IsValidLecture(classes[Console.CursorTop - cursorTop], classToPutBasket, mode))
+                    if (getValue.IsValidLecture(searchedLecture[Console.CursorTop - cursorTop], selectedLecture, mode))
                     {
-                        classToPutBasket.Add(classes[Console.CursorTop - cursorTop]);
+                        selectedLecture.Add(searchedLecture[Console.CursorTop - cursorTop]);
                         print.CompletePutOrDeleteLectureInBasket(1, Console.CursorTop, Constants.PUT);
                     }
                     else print.CompletePutOrDeleteLectureInBasket(1, Console.CursorTop, Constants.FAIL);
@@ -127,7 +136,7 @@ namespace EnSharpPortal.Source.Function
         /// </summary>
         /// <param name="basket">관심과목에 담은 강의 리스트</param>
         /// <returns>갱신된 관심과목 강의 리스트</returns>
-        public List<ClassVO> ManageSelectedLecture(List<ClassVO> selectedLecture, int mode)
+        public List<ClassVO> ManageSelectedLecture(int mode, List<ClassVO> selectedLecture)
         {
             ConsoleKeyInfo keyInfo;
             bool isFirstLoop = true;
@@ -135,7 +144,7 @@ namespace EnSharpPortal.Source.Function
             Console.SetWindowSize(160, 35);
             Console.Clear();
 
-            print.SelectedLecture(selectedLecture, mode);
+            print.SelectedLecture(mode, selectedLecture);
 
             while (true)
             {
@@ -200,27 +209,18 @@ namespace EnSharpPortal.Source.Function
             {
                 case Constants.INQUIRE_MY_LECTURE_SCHEDULE:
                     print.MyLectureSchedule(enrolledLecture);
-                    break;
+                    tools.WaitUntilGetEscapeKey();
+                    return enrolledLecture;
                 case Constants.SAVE_MY_LECTURE_SCHEDULE:
-                    SaveMyLectureSchedule(enrolledLecture);
-                    break;
+                    return SaveMyLectureSchedule(enrolledLecture);
                 case Constants.MANAGE_MY_LECTURE_SCHEDULE:
-                    return ManageSelectedLecture(enrolledLecture, Constants.MANAGE_MY_LECTURE_SCHEDULE);
+                    return ManageSelectedLecture(Constants.MANAGE_MY_LECTURE_SCHEDULE, enrolledLecture);
+                default:
+                    return enrolledLecture;
             }
-
-            ConsoleKeyInfo keyInfo = new ConsoleKeyInfo();
-
-            // 고치기
-            while (true)
-            {
-                keyInfo = Console.ReadKey();
-                if (keyInfo.Key == ConsoleKey.Enter) break;
-            }
-
-            return enrolledLecture;
         }
 
-        public void SaveMyLectureSchedule(List<ClassVO> enrolledLecture)
+        public List<ClassVO> SaveMyLectureSchedule(List<ClassVO> enrolledLecture)
         {
             string fileName;
             string[,] excelFile = new string[25, 6];
@@ -231,6 +231,11 @@ namespace EnSharpPortal.Source.Function
             excelFile = getValue.LectureInExcelForm(enrolledLecture, excelFile);
 
             fileIOManager.CreateExcelFile(fileName, excelFile);
+
+            Console.Write("끝내려면 엔터키를 누르세요 : ");
+            tools.WaitUntilGetEscapeKey();
+
+            return enrolledLecture;
         }
      }
 }

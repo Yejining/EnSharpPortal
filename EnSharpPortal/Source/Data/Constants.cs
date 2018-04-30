@@ -241,6 +241,7 @@ namespace EnSharpPortal.Source.Data
         public const int DELETE = 1;
         public const int FAIL = 2;
 
+        public const int ALL = -1;
         public const int MAJOR = 0;
         public const int NUMBER = 1;
         public const int NAME = 2;

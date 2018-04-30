@@ -20,6 +20,7 @@ namespace EnSharpPortal.Source.Main
         Tools tools = new Tools();
 
         private int userNumber;
+        private List<ClassVO> lectureSchedule = new List<ClassVO>();
         private List<ClassVO> basket = new List<ClassVO>();
         private List<ClassVO> enrolledLecture = new List<ClassVO>();
 
@@ -29,10 +30,7 @@ namespace EnSharpPortal.Source.Main
             print.PortalLogIn();
 
             //userNumber = LogIn.GetIn();
-
             
-
-
             print.LogInButton();
         }
 
@@ -42,7 +40,7 @@ namespace EnSharpPortal.Source.Main
 
             // 데이터 로드(시간표)
             dataManager.LoadData();
-            List<ClassVO> classes = dataManager.Classes;
+            lectureSchedule= dataManager.Classes;
             
             while (true)
             {
@@ -63,12 +61,12 @@ namespace EnSharpPortal.Source.Main
                 if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(5, 8, 2, '▷');
                 else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(5, 8, 10, 2, '▷');
                 else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(5, "▷"); break; }
-                else if (keyInfo.Key == ConsoleKey.Enter) { GoNextFunction((Console.CursorTop / 2) - 4, classes); isFirstLoop = true; }
+                else if (keyInfo.Key == ConsoleKey.Enter) { GoNextFunction((Console.CursorTop / 2) - 4); isFirstLoop = true; }
                 else print.BlockCursorMove(5, "▷");
             }
         }
 
-        public void GoNextFunction(int cursorTop, List<ClassVO> classes)
+        public void GoNextFunction(int cursorTop)
         {
             switch (cursorTop)
             {
@@ -79,16 +77,16 @@ namespace EnSharpPortal.Source.Main
                 case Constants.APPLICATION_FOR_CHANGING_REGISTER:
                     return;
                 case Constants.INQUIRE_LECTURE_SCHEDULE:
-                    lecturePlanManage.InquireLectureSchedule(Constants.PUT_LECTURE_IN_BASKET, classes, basket);
+                    lecturePlanManage.InquireLectureSchedule(Constants.LECTURE_SEARCH, lectureSchedule, basket);
                     return;
                 case Constants.PUT_INTO_BASKET:
-                    basket = lecturePlanManage.InquireLectureSchedule(Constants.PUT_LECTURE_IN_BASKET, classes, basket);
+                    basket = lecturePlanManage.InquireLectureSchedule(Constants.PUT_LECTURE_IN_BASKET, lectureSchedule, basket);
                     return;
                 case Constants.MANAGE_BASKET:
-                    basket = lecturePlanManage.ManageSelectedLecture(basket, Constants.MANAGE_BASKET);
+                    basket = lecturePlanManage.ManageSelectedLecture(Constants.MANAGE_BASKET, basket);
                     return;
                 case Constants.REGISTER_LECTURE:
-                    enrolledLecture = lecturePlanManage.InquireLectureSchedule(Constants.SIGN_UP_CLASS, classes, basket);
+                    enrolledLecture = lecturePlanManage.SignUpLecture(lectureSchedule, basket, enrolledLecture);
                     return;
                 case Constants.CHECK_MY_SCHEDULE:
                     enrolledLecture = lecturePlanManage.ManageEnrolledLecture(enrolledLecture);

@@ -297,7 +297,7 @@ namespace EnSharpPortal.Source.IO
         /// 관심과목으로 담겨진 강의 시간표들을 출력하는 메소드입니다.
         /// </summary>
         /// <param name="basket">관심과목 수업 리스트</param>
-        public void SelectedLecture(List<ClassVO> basket, int mode)
+        public void SelectedLecture(int mode, List<ClassVO> selectedLecture)
         {
             Console.SetCursorPosition(120, 2);
             foreach (string title in Constants.ENSHARP_TITLE_IN_SEARCH_MODE)
@@ -315,7 +315,7 @@ namespace EnSharpPortal.Source.IO
             Console.SetCursorPosition(1, 7);
             Console.Write("삭제");
 
-            Lectures(basket, 9);
+            Lectures(selectedLecture, 9);
         }
 
         public void Category(int cursorLeft, int cursorTop, int index)
