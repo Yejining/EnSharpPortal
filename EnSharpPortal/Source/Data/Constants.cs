@@ -190,7 +190,14 @@ namespace EnSharpPortal.Source.Data
             ConsoleColor.DarkRed,
             ConsoleColor.DarkYellow
         };
-        
+
+        public const string NUMBER_PATTERN = "[0-9]";
+        public const string ENGLISH_PATTERN = "[a-zA-Z]";
+        public const string KOREAN_PATTERN = "[ㄱ-ㅎㅏ-ㅣ가-힣]";
+        public const string SPECIAL_LETTER = "[`~!@#$%^&*()\\-_=+\\{\\}\\[\\]\\\\\\|:;\"\'<>,.?/]";
+        public const string VALID_SPECIAL_LETTER = "[`~!@#$%^&()\\-_=+\\{\\}\\[\\];\\\\',.]";
+        public const string INVALID_SPECIAL_LETTER = "[\\\\/:*?\"<>|]";
+
         public const int ID = 1;
         public const int PASSWORD = 2;
 

@@ -536,8 +536,6 @@ namespace EnSharpPortal.Source.IO
         /// <param name="letter">사용자가 입력한 문자</param>
         public void DeleteGuideLine(int cursorLeft, bool isValid, ConsoleKeyInfo keyInfo)
         {
-            // 한글 입력되는 경우!
-
             if (keyInfo.Key == ConsoleKey.Enter) return;
 
             Console.Write(new string(' ', Console.WindowWidth - cursorLeft));
@@ -550,11 +548,16 @@ namespace EnSharpPortal.Source.IO
         /// </summary>
         /// <param name="currentCursor">커서 설정 변수(들여쓰기)</param>
         /// <param name="cursorTop">커서 설정 변수(줄)</param>
-        public void InvalidInput(int currentCursor, int cursorTop)
+        public void InvalidInput(ConsoleKeyInfo keyInfo,int currentCursor, int cursorTop)
         {
-            // 한글 입력되는 경우!
+            string space;
+
+            if (System.Text.RegularExpressions.Regex.IsMatch(keyInfo.KeyChar.ToString(), Constants.KOREAN_PATTERN))
+                space = "  ";
+            else space = " ";
+
             Console.SetCursorPosition(currentCursor, cursorTop);
-            Console.Write(' ');
+            Console.Write(space);
             Console.SetCursorPosition(currentCursor, cursorTop);
         }
 
@@ -589,6 +592,19 @@ namespace EnSharpPortal.Source.IO
             ClearCurrentConsoleLine();
 
             return leftCursor;
+        }
+
+        public void ClearSearchBar(int cursorLeft, int cursorTop)
+        {
+            Console.SetCursorPosition(cursorLeft, cursorTop);
+            Console.Write(new string(' ', Console.WindowWidth - cursorLeft));
+        }
+
+        public void Answer(int cursorLeft, int cursorTop, string answer)
+        {
+            ClearSearchBar(cursorLeft, cursorTop);
+            Console.SetCursorPosition(cursorLeft, cursorTop);
+            Console.Write(answer);
         }
     }
 }

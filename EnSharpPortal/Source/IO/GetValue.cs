@@ -303,10 +303,10 @@ namespace EnSharpPortal.Source.IO
         /// <returns>사용자가 입력한 검색어</returns>
         public string Information(int cursorLeft, int cursorTop, int mode, int limit)
         {
-            int currentCursor;
+            int currentCursor = 0;
             bool isValid = false;
             StringBuilder answer = new StringBuilder();
-            ConsoleKeyInfo keyInfo;
+            ConsoleKeyInfo keyInfo = new ConsoleKeyInfo();
 
             Console.SetCursorPosition(cursorLeft, cursorTop);
 
@@ -322,15 +322,50 @@ namespace EnSharpPortal.Source.IO
                 if (keyInfo.Key == ConsoleKey.Escape) return "@입력취소@";
                 else if (keyInfo.Key == ConsoleKey.Backspace) answer = BackspaceInput(cursorLeft, cursorTop, answer);
                 else if (isValid) answer = ValidInput(currentCursor, limit, keyInfo.KeyChar, answer);
-                else if (keyInfo.Key != ConsoleKey.Enter) print.InvalidInput(currentCursor, cursorTop);
+                else if (keyInfo.Key != ConsoleKey.Enter) print.InvalidInput(keyInfo, currentCursor, cursorTop);
                 else if (keyInfo.Key == ConsoleKey.Enter)
                 {
-                    if (answer.Length == 0 && mode == Data.Constants.SERIAL_NUMBER) return "0"; 
+                    if (answer.Length == 0 && mode == Constants.SERIAL_NUMBER) return "0";
                     else return answer.ToString();
                 }
 
-                if (answer.Length == 0) print.SearchGuideline(Data.Constants.SEARCHING_MENU[mode], cursorLeft, cursorTop);
+                if (answer.Length == 0) print.SearchGuideline(Constants.SEARCHING_MENU[mode], cursorLeft, cursorTop);
             }
+        }
+
+        public bool IsKorean(ConsoleKeyInfo keyInfo)
+        {
+            if (System.Text.RegularExpressions.Regex.IsMatch(keyInfo.KeyChar.ToString(), Constants.KOREAN_PATTERN))
+                return true;
+            else return false;
+        }
+
+        public bool IsValid(ConsoleKeyInfo keyInfo, int mode)
+        {
+            // 엔터
+            if (keyInfo.Key == ConsoleKey.Enter) return false;
+
+            // 숫자
+            if (System.Text.RegularExpressions.Regex.IsMatch(keyInfo.KeyChar.ToString(), Constants.NUMBER_PATTERN))
+            {
+                if (mode == Constants.PROFESSOR) return false;
+                else return true;
+            }
+            if (mode == Constants.SERIAL_NUMBER) return false;
+
+            // 한글, 영어
+            if (System.Text.RegularExpressions.Regex.IsMatch(keyInfo.KeyChar.ToString(), Constants.ENGLISH_PATTERN)) return true;
+            if (System.Text.RegularExpressions.Regex.IsMatch(keyInfo.KeyChar.ToString(), Constants.KOREAN_PATTERN)) return true;
+            if (mode == Constants.PROFESSOR) return false;
+
+            // 특수기호
+            if (mode == Constants.LECTURE_NAME && (System.Text.RegularExpressions.Regex.IsMatch(keyInfo.KeyChar.ToString(), Constants.SPECIAL_LETTER))) return true;
+            if (mode == Constants.LECTURE_NAME) return false;
+            if (System.Text.RegularExpressions.Regex.IsMatch(keyInfo.KeyChar.ToString(), Constants.INVALID_SPECIAL_LETTER)) return false;
+            if (System.Text.RegularExpressions.Regex.IsMatch(keyInfo.KeyChar.ToString(), Constants.VALID_SPECIAL_LETTER)) return true;
+            if (keyInfo.Key == ConsoleKey.Spacebar) return true;
+
+            return false;
         }
 
         /// <summary>
@@ -475,25 +510,6 @@ namespace EnSharpPortal.Source.IO
             }
 
             return classes;
-        }
-
-        /// <summary>
-        /// 사용자가 입력한 키가 숫자인지 검사하는 메소드입니다.
-        /// </summary>
-        /// <param name="keyInfo">사용자가 입력한 키</param>
-        /// <returns>검색어 숫자 여부</returns>
-        public bool IsNumber(ConsoleKeyInfo keyInfo)
-        {
-            if (keyInfo.Key >= ConsoleKey.D0 && keyInfo.Key <= ConsoleKey.D9) return true;
-            else return false;
-        }
-
-        // 수정 필요, 입력값이 올바른지 학인하는 것
-        public bool IsValid(ConsoleKeyInfo keyInfo, int mode)
-        {
-            if (mode == Data.Constants.SERIAL_NUMBER) return IsNumber(keyInfo);
-            if (keyInfo.Key == ConsoleKey.Enter) return false;
-            return true;
         }
 
         /// <summary>
