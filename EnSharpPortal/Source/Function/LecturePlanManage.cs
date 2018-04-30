@@ -60,6 +60,8 @@ namespace EnSharpPortal.Source.Function
             string professor = "";
             int searchMethod = -1;
 
+            print.LectureSearchMenu(Constants.SIGN_UP_CLASS);
+
             searchMethod = getValue.DropBox(22, 11, Constants.SIGN_UP_CLASS);
 
             switch (searchMethod)

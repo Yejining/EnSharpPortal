@@ -329,7 +329,11 @@ namespace EnSharpPortal.Source.IO
                     else return answer.ToString();
                 }
 
-                if (answer.Length == 0) print.SearchGuideline(Constants.SEARCHING_MENU[mode], cursorLeft, cursorTop);
+                if (answer.Length == 0)
+                {
+                    if (mode == Constants.FILE_NAME) print.SearchGuideline("10자 이내 문자, 숫자", cursorLeft, cursorTop);
+                    else print.SearchGuideline(Constants.SEARCHING_MENU[mode], cursorLeft, cursorTop);
+                }
             }
         }
 
