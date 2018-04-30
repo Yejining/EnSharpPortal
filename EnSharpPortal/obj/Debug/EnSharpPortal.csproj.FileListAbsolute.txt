@@ -1,6 +1,6 @@
-C:\Users\User\Documents\GitHub\EnSharpPortal\EnSharpPortal\bin\Debug\EnSharpPortal.exe
-C:\Users\User\Documents\GitHub\EnSharpPortal\EnSharpPortal\bin\Debug\EnSharpPortal.pdb
 C:\Users\User\Documents\GitHub\EnSharpPortal\EnSharpPortal\obj\Debug\EnSharpPortal.csprojResolveAssemblyReference.cache
 C:\Users\User\Documents\GitHub\EnSharpPortal\EnSharpPortal\obj\Debug\EnSharpPortal.csproj.CoreCompileInputs.cache
 C:\Users\User\Documents\GitHub\EnSharpPortal\EnSharpPortal\obj\Debug\EnSharpPortal.exe
 C:\Users\User\Documents\GitHub\EnSharpPortal\EnSharpPortal\obj\Debug\EnSharpPortal.pdb
+C:\Users\User\Documents\GitHub\EnSharpPortal\EnSharpPortal\bin\Debug\EnSharpPortal.exe
+C:\Users\User\Documents\GitHub\EnSharpPortal\EnSharpPortal\bin\Debug\EnSharpPortal.pdb

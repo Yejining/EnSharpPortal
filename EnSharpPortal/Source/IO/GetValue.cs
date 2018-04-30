@@ -257,7 +257,7 @@ namespace EnSharpPortal.Source.IO
 
             int index = 0;
             string[] option;
-
+            
             if (mode == Constants.SELECT_DEPARTMENT) option = Constants.DEPARTMENT;
             else if (mode == Constants.SELECT_GRADE) option = Constants.GRADE;
             else option = Constants.SIGN_UP_CLASSES_SELECTION;
@@ -279,6 +279,9 @@ namespace EnSharpPortal.Source.IO
                     case ConsoleKey.Enter:
                         if (mode == Constants.SIGN_UP_CLASS) print.Category(6, cursorTop + 2, index);
                         return index;
+                    case ConsoleKey.Tab:
+                        if (mode == Constants.SIGN_UP_CLASS) print.Category(6, cursorTop + 2, index);
+                        return index;
                     case ConsoleKey.UpArrow:
                         if (index == 0) index = option.Length - 1;
                         else index--;
@@ -291,6 +294,20 @@ namespace EnSharpPortal.Source.IO
                         keyInfo = Console.ReadKey();
                         break;
                 }
+            }
+        }
+
+        public int EnterOrTab()
+        {
+            ConsoleKeyInfo keyInfo;
+
+            while (true)
+            {
+                keyInfo = Console.ReadKey();
+
+                if (keyInfo.Key == ConsoleKey.Enter) return Constants.ENTER;
+                else if (keyInfo.Key == ConsoleKey.Tab) return Constants.TAB;
+                else if (keyInfo.Key == ConsoleKey.Escape) return Constants.ESCAPE;
             }
         }
 
@@ -322,9 +339,10 @@ namespace EnSharpPortal.Source.IO
                 if (keyInfo.Key == ConsoleKey.Escape) return "@입력취소@";
                 else if (keyInfo.Key == ConsoleKey.Backspace) answer = BackspaceInput(cursorLeft, cursorTop, answer);
                 else if (isValid) answer = ValidInput(currentCursor, limit, keyInfo.KeyChar, answer);
-                else if (keyInfo.Key != ConsoleKey.Enter) print.InvalidInput(keyInfo, currentCursor, cursorTop);
-                else if (keyInfo.Key == ConsoleKey.Enter)
+                else if (keyInfo.Key != ConsoleKey.Enter && keyInfo.Key!= ConsoleKey.Tab) print.InvalidInput(keyInfo, currentCursor, cursorTop);
+                else if (keyInfo.Key == ConsoleKey.Enter || keyInfo.Key == ConsoleKey.Tab)
                 {
+                    if (answer.Length == 0) print.SearchGuideline(Constants.SEARCHING_MENU[mode], cursorLeft, cursorTop);
                     if (answer.Length == 0 && mode == Constants.SERIAL_NUMBER) return "0";
                     else return answer.ToString();
                 }
@@ -346,8 +364,9 @@ namespace EnSharpPortal.Source.IO
 
         public bool IsValid(ConsoleKeyInfo keyInfo, int mode)
         {
-            // 엔터
+            // 엔터, 탭
             if (keyInfo.Key == ConsoleKey.Enter) return false;
+            if (keyInfo.Key == ConsoleKey.Tab) return false;
 
             // 숫자
             if (System.Text.RegularExpressions.Regex.IsMatch(keyInfo.KeyChar.ToString(), Constants.NUMBER_PATTERN))

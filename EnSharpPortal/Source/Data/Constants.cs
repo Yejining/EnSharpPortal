@@ -198,6 +198,8 @@ namespace EnSharpPortal.Source.Data
         public const string VALID_SPECIAL_LETTER = "[`~!@#$%^&()\\-_=+\\{\\}\\[\\];\\\\',.]";
         public const string INVALID_SPECIAL_LETTER = "[\\\\/:*?\"<>|]";
 
+        public const int NONE = -5;
+
         public const int ID = 1;
         public const int PASSWORD = 2;
 
@@ -259,5 +261,11 @@ namespace EnSharpPortal.Source.Data
         public const int INQUIRE_MY_LECTURE_SCHEDULE = 0;
         public const int SAVE_MY_LECTURE_SCHEDULE = 1;
         public const int MANAGE_MY_LECTURE_SCHEDULE = 2;
+
+        public const int TAB = 1;
+        public const int ENTER = 2;
+        public const int ESCAPE = 3;
+
+        public const int CHECK = 10;
     }
 }

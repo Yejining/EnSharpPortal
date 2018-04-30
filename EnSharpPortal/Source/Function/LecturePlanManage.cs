@@ -25,27 +25,49 @@ namespace EnSharpPortal.Source.Function
         public List<ClassVO> InquireLectureSchedule(int mode, List<ClassVO> lectureSchedule, List<ClassVO> basket)
         {
             List<ClassVO> searchedLecture = new List<ClassVO>();
-            int department;
+            int next;
+            int department = 0;
             string serialNumber;
             string lectureName;
             int grade;
             string professor;
 
             print.LectureSearchMenu(mode);
-            
-            // 강의시간표 조회 혹은 관심과목 담기 모드
-            // - 정보 수집
-            department = getValue.DropBox(21, 11, Constants.SELECT_DEPARTMENT); if (department == -1) return basket;
-            serialNumber = getValue.Information(17, 13, Constants.SERIAL_NUMBER, 6); if (string.Compare(serialNumber, "@입력취소@") == 0) return basket;
-            lectureName = getValue.Information(17, 15, Constants.LECTURE_NAME, 10); if (string.Compare(lectureName, "@입력취소@") == 0) return basket;
-            grade = getValue.DropBox(17, 17, Constants.SELECT_GRADE); if (grade == -1) return basket;
-            professor = getValue.Information(17, 19, Constants.PROFESSOR, 8); if (string.Compare(professor, "@입력취소@") == 0) return basket;
-            Console.SetCursorPosition(0, 23);
-            print.PrintSentence("강의시간표 조회하기");
+
+            while(true)
+            {
+                // 강의시간표 조회 혹은 관심과목 담기 모드
+                // - 정보 수집
+                Console.SetCursorPosition(0, 22);
+                print.ClearCurrentConsoleLine();
+
+                print.ColorMenu(Constants.PROFESSOR, 19, Constants.SELECT_DEPARTMENT + 1, 11);
+                department = getValue.DropBox(21, 11, Constants.SELECT_DEPARTMENT); if (department == -1) return basket;
+                print.ColorMenu(Constants.SELECT_DEPARTMENT + 1, 11, Constants.SERIAL_NUMBER, 13);
+                serialNumber = getValue.Information(17, 13, Constants.SERIAL_NUMBER, 6); if (string.Compare(serialNumber, "@입력취소@") == 0) return basket;
+                print.ColorMenu(Constants.SERIAL_NUMBER, 13, Constants.LECTURE_NAME, 15);
+                lectureName = getValue.Information(17, 15, Constants.LECTURE_NAME, 10); if (string.Compare(lectureName, "@입력취소@") == 0) return basket;
+                print.ColorMenu(Constants.LECTURE_NAME, 15, Constants.SELECT_GRADE + 6, 17);
+                grade = getValue.DropBox(17, 17, Constants.SELECT_GRADE); if (grade == -1) return basket;
+                print.ColorMenu(Constants.SELECT_GRADE + 6, 17, Constants.PROFESSOR, 19);
+                professor = getValue.Information(17, 19, Constants.PROFESSOR, 8); if (string.Compare(professor, "@입력취소@") == 0) return basket;
+
+                print.ColorMenu(Constants.PROFESSOR, 19, Constants.CHECK, 22);
+
+                next = getValue.EnterOrTab();
+                if (next == Constants.ENTER)
+                {
+                    Console.SetCursorPosition(0, 25);
+                    print.ClearCurrentConsoleLine();
+                    break;
+                }
+                if (next == Constants.ESCAPE) return basket;
+            }
 
             // - 조건 검색 후 관심과목 담기
             searchedLecture = getValue.SearchLectureByCondition(mode, lectureSchedule, basket, department, serialNumber, lectureName, grade, professor);
             print.SearchedLectureSchedule(mode, Constants.ALL, searchedLecture, department, serialNumber, lectureName, grade, professor);
+            
             if (mode == Constants.LECTURE_SEARCH) return lectureSchedule;
             else return PutLectureInBasketOrSignUpLecture(Constants.PUT_LECTURE_IN_BASKET, searchedLecture);
         }
@@ -63,6 +85,7 @@ namespace EnSharpPortal.Source.Function
             print.LectureSearchMenu(Constants.SIGN_UP_CLASS);
 
             searchMethod = getValue.DropBox(22, 11, Constants.SIGN_UP_CLASS);
+            if (searchMethod == -1) return enrolledLecture;
 
             switch (searchMethod)
             {
@@ -92,6 +115,9 @@ namespace EnSharpPortal.Source.Function
             }
 
             searchedLecture = getValue.SearchLectureByCondition(Constants.SIGN_UP_CLASS, lectureSchedule, enrolledLecture, department, serialNumber, lectureName, grade, professor);
+
+            
+
             print.SearchedLectureSchedule(Constants.SIGN_UP_CLASS, searchMethod, searchedLecture, department, serialNumber, lectureName, grade, professor);
             return PutLectureInBasketOrSignUpLecture(Constants.SIGN_UP_CLASS, searchedLecture);
         }
@@ -116,7 +142,7 @@ namespace EnSharpPortal.Source.Function
             while (true)
             {
                 ConsoleKeyInfo keyInfo = Console.ReadKey();
-
+                
                 if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(2, cursorTop, 1, '▷');
                 else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(2, cursorTop, searchedLecture.Count, 1, '▷');
                 else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(2, "▷"); return selectedLecture; }
@@ -130,6 +156,9 @@ namespace EnSharpPortal.Source.Function
                     else print.CompletePutOrDeleteLectureInBasket(1, Console.CursorTop, Constants.FAIL);
                 }
                 else print.BlockCursorMove(2, "▷");
+
+                if (!getValue.IsValidLecture(searchedLecture[Console.CursorTop - cursorTop], selectedLecture, mode))
+                    print.NonAvailableLectureMark(1, Console.CursorTop);
             }
         }
 
@@ -230,6 +259,8 @@ namespace EnSharpPortal.Source.Function
             print.SaveLectureIntoFileBackground();
 
             fileName = getValue.Information(23, 11, Constants.FILE_NAME, 10);
+            if (string.Compare(fileName, "@입력취소@") == 0) return enrolledLecture;
+
             excelFile = getValue.LectureInExcelForm(enrolledLecture, excelFile);
 
             fileIOManager.CreateExcelFile(fileName, excelFile);

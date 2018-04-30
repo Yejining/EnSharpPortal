@@ -100,6 +100,22 @@ namespace EnSharpPortal.Source.IO
             PrintSentences(Data.Constants.USER_VERSION_MENU);
         }
 
+        public void ColorMenu(int modeToGray, int grayCursorTop, int modeToHighlight, int highlightCursorTop)
+        {
+            if (modeToGray != Constants.NONE)
+            {
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.SetCursorPosition(6, grayCursorTop);
+                Console.Write(Constants.SEARCHING_MENU[modeToGray - 1]);
+            }
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.SetCursorPosition(6, highlightCursorTop);
+            if (modeToHighlight != Constants.CHECK) Console.Write(Constants.SEARCHING_MENU[modeToHighlight - 1]);
+            else { Console.SetCursorPosition(10, highlightCursorTop); Console.Write("강의시간표 조회하기(엔터)"); }
+            Console.ForegroundColor = ConsoleColor.Gray;
+        }
+
         /// <summary>
         /// 강의시간표를 조회할 때의 메뉴를 출력하는 메소드입니다.
         /// </summary>
@@ -278,6 +294,13 @@ namespace EnSharpPortal.Source.IO
                     Console.SetCursorPosition(7, Console.CursorTop + 1);
                 }
             }
+        }
+
+        public void NonAvailableLectureMark(int cursorLeft, int cursorTop)
+        {
+            Console.SetCursorPosition(cursorLeft, cursorTop);
+            Console.Write(" X");
+            Console.SetCursorPosition(cursorLeft + 1, cursorTop);
         }
 
         public void CompletePutOrDeleteLectureInBasket(int cursorLeft, int cursorTop, int mode)
@@ -536,8 +559,8 @@ namespace EnSharpPortal.Source.IO
         /// <param name="letter">사용자가 입력한 문자</param>
         public void DeleteGuideLine(int cursorLeft, bool isValid, ConsoleKeyInfo keyInfo)
         {
-            if (keyInfo.Key == ConsoleKey.Enter) return;
-
+            if (keyInfo.Key == ConsoleKey.Enter || keyInfo.Key == ConsoleKey.Tab) return;
+            
             Console.Write(new string(' ', Console.WindowWidth - cursorLeft));
             Console.SetCursorPosition(cursorLeft, Console.CursorTop);
             if (isValid) Console.Write(keyInfo.KeyChar);
