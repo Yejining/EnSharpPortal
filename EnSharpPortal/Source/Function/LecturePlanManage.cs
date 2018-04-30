@@ -44,7 +44,7 @@ namespace EnSharpPortal.Source.Function
             print.PrintSentence("강의시간표 조회하기");
 
             // - 조건 검색 후 관심과목 담기
-            searchedLecture = getValue.SearchLectureByCondition(lectureSchedule, department, serialNumber, lectureName, grade, professor);
+            searchedLecture = getValue.SearchLectureByCondition(mode, lectureSchedule, basket, department, serialNumber, lectureName, grade, professor);
             print.SearchedLectureSchedule(mode, Constants.ALL, searchedLecture, department, serialNumber, lectureName, grade, professor);
             if (mode == Constants.LECTURE_SEARCH) return lectureSchedule;
             else return PutLectureInBasketOrSignUpLecture(Constants.PUT_LECTURE_IN_BASKET, searchedLecture);
@@ -89,7 +89,7 @@ namespace EnSharpPortal.Source.Function
                     return PutLectureInBasketOrSignUpLecture(Constants.SIGN_UP_CLASS, basket);
             }
 
-            searchedLecture = getValue.SearchLectureByCondition(lectureSchedule, department, serialNumber, lectureName, grade, professor);
+            searchedLecture = getValue.SearchLectureByCondition(Constants.SIGN_UP_CLASS, lectureSchedule, enrolledLecture, department, serialNumber, lectureName, grade, professor);
             print.SearchedLectureSchedule(Constants.SIGN_UP_CLASS, searchMethod, searchedLecture, department, serialNumber, lectureName, grade, professor);
             return PutLectureInBasketOrSignUpLecture(Constants.SIGN_UP_CLASS, searchedLecture);
         }

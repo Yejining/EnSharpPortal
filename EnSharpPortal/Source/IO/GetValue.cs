@@ -383,14 +383,17 @@ namespace EnSharpPortal.Source.IO
         /// <param name="grade">사용자가 선택한 학년</param>
         /// <param name="professor">사용자가 입력한 교수명</param>
         /// <returns>검색된 강의 시간표</returns>
-        public List<ClassVO> SearchLectureByCondition(List<ClassVO> classes, int department, string serialNumber, string lectureName, int grade, string professor)
+        public List<ClassVO> SearchLectureByCondition(int mode, List<ClassVO> lectureSchedule, List<ClassVO> selectedLecture, int department, string serialNumber, string lectureName, int grade, string professor)
         {
-            classes = ClearancedClasses(classes, department, grade);
-            classes = ClearancedClasses(classes, serialNumber, Constants.SERIAL_NUMBER);
-            classes = ClearancedClasses(classes, lectureName, Constants.LECTURE_NAME);
-            classes = ClearancedClasses(classes, professor, Constants.PROFESSOR);
+            List<ClassVO> searchedLecture = new List<ClassVO>();
 
-            return classes;
+            searchedLecture = ClearancedClasses(lectureSchedule, department, grade);
+            searchedLecture = ClearancedClasses(searchedLecture, serialNumber, Constants.SERIAL_NUMBER);
+            searchedLecture = ClearancedClasses(searchedLecture, lectureName, Constants.LECTURE_NAME);
+            searchedLecture = ClearancedClasses(searchedLecture, professor, Constants.PROFESSOR);
+
+            if (mode == Constants.LECTURE_SEARCH) return searchedLecture;
+            else return ClearancedClasses(searchedLecture, selectedLecture);
         }
 
         /// <summary>
@@ -424,6 +427,21 @@ namespace EnSharpPortal.Source.IO
             }
 
             return classes;
+        }
+
+        public List<ClassVO> ClearancedClasses(List<ClassVO> lectureSchedule, List<ClassVO> selectedLecture)
+        {
+            List<int> indexesToDelete = new List<int>();
+
+            for (int lectureIndex = lectureSchedule.Count - 1; lectureIndex >= 0; lectureIndex--)
+                foreach (ClassVO selected in selectedLecture)
+                    if (string.Compare(lectureSchedule[lectureIndex].SerialNumber, selected.SerialNumber) == 0 &&
+                        string.Compare(lectureSchedule[lectureIndex].DivisionClassNumber, selected.DivisionClassNumber) == 0)
+                        indexesToDelete.Add(lectureIndex);
+
+            for (int delete = 0; delete < indexesToDelete.Count; delete++) lectureSchedule.RemoveAt(indexesToDelete[delete]);
+
+            return lectureSchedule;
         }
 
         /// <summary>
