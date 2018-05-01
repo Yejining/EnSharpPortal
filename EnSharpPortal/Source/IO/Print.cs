@@ -57,6 +57,23 @@ namespace EnSharpPortal.Source.IO
         /// 인자로 받은 문자열을 가운데정렬하여 출력하는 메소드입니다.
         /// </summary>
         /// <param name="sentence">출력할 문자열</param>
+        /// <param name="color">문자열 색</param>
+        public void PrintSentence(string sentence, ConsoleColor color)
+        {
+            int leftCursor;
+
+            Console.ForegroundColor = color;
+            leftCursor = GetLeftCursorForCenterArrangeMent(sentence);
+            Console.SetCursorPosition(leftCursor, Console.CursorTop);
+            Console.WriteLine(sentence);
+            Console.SetCursorPosition(0, 0);
+            Console.ForegroundColor = ConsoleColor.Gray;
+        }
+
+        /// <summary>
+        /// 인자로 받은 문자열을 가운데정렬하여 출력하는 메소드입니다.
+        /// </summary>
+        /// <param name="sentence">출력할 문자열</param>
         public void PrintSentence(string sentence)
         {
             int leftCursor;
@@ -759,6 +776,23 @@ namespace EnSharpPortal.Source.IO
             ClearSearchBar(cursorLeft, cursorTop);
             Console.SetCursorPosition(cursorLeft, cursorTop);
             Console.Write(answer);
+        }
+
+        /// <summary>
+        /// 에러 메시지를 출력하는 메소드입니다.
+        /// 에러 메시지 출력 후 1초 후에 메시지는 사라집니다.
+        /// </summary>
+        /// <param name="mode">에러 종류</param>
+        /// <param name="cursorTop">커서 정보(줄)</param>
+        public void ErrorMessage(int mode, int cursorTop)
+        {
+            Console.SetCursorPosition(0, cursorTop);
+            ClearCurrentConsoleLine();
+            PrintSentence(Constants.ERROR_MESSAGE[mode], ConsoleColor.Red);
+            System.Threading.Thread.Sleep(2000);
+            Console.SetCursorPosition(0, cursorTop);
+            ClearCurrentConsoleLine();
+            Console.ForegroundColor = ConsoleColor.Gray;
         }
 
         /// <summary>

@@ -36,8 +36,12 @@ namespace EnSharpPortal.Source.Function
 
             print.LectureSearchMenu(mode);
 
-            while(true)
+            while (true)
             {
+                Console.SetCursorPosition(0, 8);
+                print.PrintSentence(Constants.LECTURE_SEARCH_MENU[mode]);
+                print.PrintLectureSearchMenuAndOption(mode);
+
                 // 강의시간표 조회 혹은 관심과목 담기 모드
                 // - 정보 수집
                 Console.SetCursorPosition(0, 22);
@@ -56,18 +60,21 @@ namespace EnSharpPortal.Source.Function
 
                 print.ColorMenu(Constants.PROFESSOR, 19, Constants.CHECK, 22);
 
-                next = getValue.EnterOrTab();
-                if (next == Constants.ENTER)
+                // 조건 검색
+                searchedLecture = getValue.SearchLectureByCondition(mode, lectureSchedule, basket, department, serialNumber, lectureName, grade, professor);
+
+                next = tools.EnterOrTab();
+                if (next == Constants.ENTER && searchedLecture.Count != 0)
                 {
                     Console.SetCursorPosition(0, 25);
                     print.ClearCurrentConsoleLine();
                     break;
                 }
+                if (next == Constants.ENTER && searchedLecture.Count == 0) print.ErrorMessage(Constants.ERROR_THERE_IS_NO_CLASS, 22);
                 if (next == Constants.ESCAPE) return basket;
             }
 
-            // - 조건 검색 후 관심과목 담기
-            searchedLecture = getValue.SearchLectureByCondition(mode, lectureSchedule, basket, department, serialNumber, lectureName, grade, professor);
+            // 강의 출력
             print.SearchedLectureSchedule(mode, Constants.ALL, searchedLecture, department, serialNumber, lectureName, grade, professor);
             
             if (mode == Constants.LECTURE_SEARCH) { tools.WaitUntilGetEscapeKey(); return lectureSchedule; }
@@ -138,17 +145,21 @@ namespace EnSharpPortal.Source.Function
                 // 강의시간표 조회버튼 출력
                 print.ColorMenu(menu, 13, Constants.CHECK, 16);
 
+                // '관심과목 담기'로 검색하지 않는 경우 해당 조건에 따라 강의 검색
+                searchedLecture = getValue.SearchLectureByCondition(Constants.SIGN_UP_CLASS, lectureSchedule, enrolledLecture, department, serialNumber, lectureName, grade, professor);
+
                 // 다음단계 결정
-                next = getValue.EnterOrTab();
-                if (next == Constants.ENTER) break;
-                if (next == Constants.ESCAPE) return enrolledLecture;
-                if (next == Constants.TAB)
-                {
-                    Console.SetCursorPosition(0, 13);
-                    print.ClearCurrentConsoleLine();
-                    Console.SetCursorPosition(0, 16);
-                    print.ClearCurrentConsoleLine();
-                }
+                next = tools.EnterOrTab();
+
+                Console.SetCursorPosition(0, 13);
+                print.ClearCurrentConsoleLine();
+
+                if (next == Constants.TAB) { Console.SetCursorPosition(0, 16); print.ClearCurrentConsoleLine(); }
+                if ((next == Constants.ENTER && searchedLecture.Count == 0)) print.ErrorMessage(Constants.ERROR_THERE_IS_NO_CLASS, 16);
+                else if (next == Constants.ENTER && searchMethod == Constants.BASKET && basket.Count == 0) print.ErrorMessage(Constants.ERROR_EMPTY_BASKET, 16);
+                else if (next == Constants.ENTER) break;
+                else if (next == Constants.ESCAPE) return enrolledLecture;
+                else continue;
             }
             
             // '관심과목 담기'로 강의 시간표 검색할 경우
@@ -157,9 +168,6 @@ namespace EnSharpPortal.Source.Function
                 print.SearchedLectureSchedule(Constants.SIGN_UP_CLASS, searchMethod, basket, department, serialNumber, lectureName, grade, professor);
                 return PutLectureInBasketOrSignUpLecture(Constants.SIGN_UP_CLASS, basket);
             }
-
-            // '관심과목 담기'로 검색하지 않는 경우 해당 조건에 따라 강의 검색
-            searchedLecture = getValue.SearchLectureByCondition(Constants.SIGN_UP_CLASS, lectureSchedule, enrolledLecture, department, serialNumber, lectureName, grade, professor);
             
             print.SearchedLectureSchedule(Constants.SIGN_UP_CLASS, searchMethod, searchedLecture, department, serialNumber, lectureName, grade, professor);
             return PutLectureInBasketOrSignUpLecture(Constants.SIGN_UP_CLASS, searchedLecture);
@@ -192,7 +200,7 @@ namespace EnSharpPortal.Source.Function
                 else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(2, "▷"); return selectedLecture; }       // 나가기
                 else if (keyInfo.Key == ConsoleKey.Enter)                                                                    // 해당 강의 선택
                 {
-                    if (getValue.IsValidLecture(searchedLecture[Console.CursorTop - cursorTop], selectedLecture, mode))      // - 강의 선택 성공
+                    if (tools.IsValidLecture(searchedLecture[Console.CursorTop - cursorTop], selectedLecture, mode))         // - 강의 선택 성공
                     {
                         selectedLecture.Add(searchedLecture[Console.CursorTop - cursorTop]);
                         print.CompletePutOrDeleteLectureInBasket(1, Console.CursorTop, Constants.PUT);
@@ -201,7 +209,7 @@ namespace EnSharpPortal.Source.Function
                 }
                 else print.BlockCursorMove(2, "▷");
 
-                if (!getValue.IsValidLecture(searchedLecture[Console.CursorTop - cursorTop], selectedLecture, mode))         // 입력 무시 
+                if (!tools.IsValidLecture(searchedLecture[Console.CursorTop - cursorTop], selectedLecture, mode))            // 입력 무시 
                     print.NonAvailableLectureMark(1, Console.CursorTop);
             }
         }
@@ -221,6 +229,8 @@ namespace EnSharpPortal.Source.Function
             Console.Clear();
 
             print.SelectedLecture(mode, selectedLecture);
+
+            if (selectedLecture.Count == 0) { print.PrintSentence("나가기(ESC)"); tools.WaitUntilGetEscapeKey(); return selectedLecture; }
 
             // 방향키 및 엔터, ESC키를 이용해 기능 수행
             while (true)
@@ -333,7 +343,7 @@ namespace EnSharpPortal.Source.Function
             fileIOManager.CreateExcelFile(fileName, excelFile);
 
             Console.Write("끝내려면 엔터키를 누르세요 : ");
-            tools.WaitUntilGetEscapeKey();
+            tools.WaitUntilGetEnterOrEscapeKey();
 
             return enrolledLecture;
         }

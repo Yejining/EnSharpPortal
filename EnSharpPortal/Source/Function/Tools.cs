@@ -11,7 +11,6 @@ namespace EnSharpPortal.Source.Function
     class Tools
     {
         Print print = new Print();
-        Tools tools = new Tools();
 
         /// <summary>
         /// 방향키를 이용하는 기능을 수행할 경우, 위 방향키를 누를 때 호출되는 메소드입니다.
@@ -43,7 +42,7 @@ namespace EnSharpPortal.Source.Function
         }
 
         /// <summary>
-        /// 엔터키를 받을 때까지 키를 입력받는 메소드입니다.
+        /// ESC키를 받을 때까지 키를 입력받는 메소드입니다.
         /// </summary>
         public void WaitUntilGetEscapeKey()
         {
@@ -53,7 +52,26 @@ namespace EnSharpPortal.Source.Function
             {
                 keyInfo = Console.ReadKey();
 
-                if (keyInfo.Key == ConsoleKey.Enter) return;
+                if (keyInfo.Key == ConsoleKey.Escape) return;
+                else if (Console.CursorLeft == 0) print.BlockCursorMove(Console.CursorLeft, " ");
+                else print.BlockCursorMove(Console.CursorLeft - 1, " ");
+            }
+        }
+
+        /// <summary>
+        /// 엔터 또는 ESC키를 받을 때까지 키를 입력받는 메소드입니다.
+        /// </summary>
+        public void WaitUntilGetEnterOrEscapeKey()
+        {
+            ConsoleKeyInfo keyInfo;
+
+            while (true)
+            {
+                keyInfo = Console.ReadKey();
+
+                if (keyInfo.Key == ConsoleKey.Escape) return;
+                else if (keyInfo.Key == ConsoleKey.Enter) return;
+                else if (Console.CursorLeft == 0) print.BlockCursorMove(Console.CursorLeft, " ");
                 else print.BlockCursorMove(Console.CursorLeft - 1, " ");
             }
         }
@@ -128,7 +146,7 @@ namespace EnSharpPortal.Source.Function
             {
                 sumOfCredit += selectedClass.Credit;
                 if (lecture.SerialNumber == selectedClass.SerialNumber) return false;
-                if (tools.IsOverLapClass(lecture, selectedClass)) return false;
+                if (IsOverLapClass(lecture, selectedClass)) return false;
             }
 
             // 학점이 초과되는 경우

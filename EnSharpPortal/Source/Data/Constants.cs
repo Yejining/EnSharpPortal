@@ -178,6 +178,13 @@ namespace EnSharpPortal.Source.Data
             "금"
         };
 
+        public static string[] ERROR_MESSAGE =
+        {
+            "검색 조건과 일치하는 강의가 없습니다!",
+            "관심과목으로 지정한 강의가 없습니다!",
+            "수강신청한 강의가 없습니다!"
+        };
+
         public static ConsoleColor[] COLORS =
         {
             ConsoleColor.DarkBlue,
@@ -265,5 +272,9 @@ namespace EnSharpPortal.Source.Data
         public const int ESCAPE = 3;
 
         public const int CHECK = 10;
+
+        public const int ERROR_THERE_IS_NO_CLASS = 0;
+        public const int ERROR_EMPTY_BASKET = 1;
+        public const int ERROR_NO_ENROLLED_LECTURE = 2;
     }
 }
