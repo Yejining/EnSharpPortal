@@ -18,24 +18,13 @@ namespace EnSharpPortal.Source.Main
         DataManager dataManager = new DataManager();
         LecturePlanManage lecturePlanManage = new LecturePlanManage();
         Tools tools = new Tools();
-
-        private int userNumber;
+        
         private List<ClassVO> lectureSchedule = new List<ClassVO>();
         private List<ClassVO> basket = new List<ClassVO>();
         private List<ClassVO> enrolledLecture = new List<ClassVO>();
 
-        public void RunPortal()
-        {
-            userNumber = Constants.NOBODY;
-            print.PortalLogIn();
-
-            //userNumber = LogIn.GetIn();
-            
-            print.LogInButton();
-        }
-
         /// <summary>
-        /// 로그인하지 않고 바로 포탈 프로그램을 실행하는 메소드입니다.
+        /// 포탈 프로그램을 실행하는 메소드입니다.
         /// </summary>
         public void RunPortalWithoutLogIn()
         {
@@ -43,7 +32,7 @@ namespace EnSharpPortal.Source.Main
 
             // 데이터 로드(시간표)
             dataManager.LoadData();
-            lectureSchedule= dataManager.Classes;
+            lectureSchedule = dataManager.Classes;
             
             while (true)
             {
@@ -53,7 +42,7 @@ namespace EnSharpPortal.Source.Main
                     print.UserVersionMenu();
 
                     // 기능 선택
-                    Console.SetCursorPosition(5, 8);
+                    Console.SetCursorPosition(8, 10);
                     Console.Write('▷');
 
                     isFirstLoop = false;
@@ -61,12 +50,15 @@ namespace EnSharpPortal.Source.Main
 
                 ConsoleKeyInfo keyInfo = Console.ReadKey();
 
-                if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(5, 8, 2, '▷');                     // 위로 커서 이동        
-                else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(5, 8, 10, 2, '▷');        // 아래로 커서 이동
-                else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(5, "▷"); break; }    // 나가기
-                else if (keyInfo.Key == ConsoleKey.Enter)                                                // 기능 선택
-                { GoNextFunction((Console.CursorTop / 2) - 4); isFirstLoop = true; }
-                else print.BlockCursorMove(5, "▷");                                                     // 입력 무시
+                if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(8, 10, 7, 2, '▷');                  // 위로 커서 이동        
+                else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(8, 10, 7, 2, '▷');         // 아래로 커서 이동
+                else if (keyInfo.Key == ConsoleKey.Enter)                                                 // 기능 선택
+                {
+                    GoNextFunction((Console.CursorTop / 2) - 5);
+                    isFirstLoop = true;
+                    if (tools.IsEnd(Console.CursorTop)) { Console.SetCursorPosition(4, Console.CursorTop + 2); return; }
+                }
+                else print.BlockCursorMove(8, "▷");                                                     // 입력 무시
             }
         }
 
@@ -78,19 +70,13 @@ namespace EnSharpPortal.Source.Main
         {
             switch (cursorTop)
             {
-                case Constants.STUDENT_INFORMATION:
-                    return;
-                case Constants.CHANGE_PASSWORD:
-                    return;
-                case Constants.APPLICATION_FOR_CHANGING_REGISTER:
-                    return;
                 case Constants.INQUIRE_LECTURE_SCHEDULE:
                     lecturePlanManage.InquireLectureSchedule(Constants.LECTURE_SEARCH, lectureSchedule, basket);
                     return;
                 case Constants.PUT_INTO_BASKET:
                     basket = lecturePlanManage.InquireLectureSchedule(Constants.PUT_LECTURE_IN_BASKET, lectureSchedule, basket);
                     return;
-                case Constants.MANAGE_BASKET:
+                case Constants.MANAGE_PRE_ENROLLED_LECTURE:
                     basket = lecturePlanManage.ManageSelectedLecture(Constants.MANAGE_BASKET, basket);
                     return;
                 case Constants.REGISTER_LECTURE:
@@ -101,7 +87,7 @@ namespace EnSharpPortal.Source.Main
                     return;
                 case Constants.INFORMATION_ABOUT_PORTAL:
                     return;
-                case Constants.LOG_OUT:
+                case Constants.CLOSE_PROGRAM:
                     return;
             }
         }

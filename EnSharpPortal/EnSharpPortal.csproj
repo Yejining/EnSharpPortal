@@ -49,7 +49,6 @@
     <Compile Include="Source\Data\Constants.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Source\Data\MemberVO.cs" />
     <Compile Include="Source\Function\LecturePlanManage.cs" />
     <Compile Include="Source\Function\LogIn.cs" />
     <Compile Include="Source\Function\Tools.cs" />

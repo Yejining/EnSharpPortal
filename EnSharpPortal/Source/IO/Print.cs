@@ -107,11 +107,6 @@ namespace EnSharpPortal.Source.IO
             
         }
 
-        public void LogInButton()
-        {
-
-        }
-
         /// <summary>
         /// 유저 버전으로 로그인했을 때 메뉴를 출력하는 메소드입니다.
         /// </summary>
@@ -120,9 +115,9 @@ namespace EnSharpPortal.Source.IO
             SetWindowSmallSize();
 
             Console.SetCursorPosition(0, 3);
-            PrintSentences(Data.Constants.ENSHARP_TITLE);
-            Console.SetCursorPosition(0, 8);
-            PrintSentences(Data.Constants.USER_VERSION_MENU);
+            PrintSentences(Constants.ENSHARP_TITLE);
+            Console.SetCursorPosition(0, 10);
+            PrintSentences(Constants.USER_VERSION_MENU);
         }
 
         /// <summary>
@@ -642,6 +637,7 @@ namespace EnSharpPortal.Source.IO
             }
 
             Console.ForegroundColor = ConsoleColor.Gray;
+            Console.SetCursorPosition(0, Console.CursorTop + 1);
             PrintSentence("나가기(ESC)");
         }
 

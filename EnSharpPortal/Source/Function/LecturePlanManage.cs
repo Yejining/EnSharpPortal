@@ -195,7 +195,7 @@ namespace EnSharpPortal.Source.Function
             {
                 ConsoleKeyInfo keyInfo = Console.ReadKey();
                 
-                if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(2, cursorTop, 1, '▷');                                 // 위로 커서 옮김
+                if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(2, cursorTop, searchedLecture.Count, 1, '▷');                                 // 위로 커서 옮김
                 else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(2, cursorTop, searchedLecture.Count, 1, '▷'); // 밑으로 커서 옮김
                 else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(2, "▷"); return selectedLecture; }       // 나가기
                 else if (keyInfo.Key == ConsoleKey.Enter)                                                                    // 해당 강의 선택
@@ -244,15 +244,16 @@ namespace EnSharpPortal.Source.Function
 
                 keyInfo = Console.ReadKey();
 
-                if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(2, 9, 1, '▷');                                     // 위로 커서 옮김
+                if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(2, 9, selectedLecture.Count, 1, '▷');              // 위로 커서 옮김
                 else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(2, 9, selectedLecture.Count, 1, '▷');     // 밑으로 커서 내림
                 else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(2, "▷"); break; }                    // 나가기
                 else if (keyInfo.Key == ConsoleKey.Enter)                                                                // 리스트에서 강의 삭제
                 {
                     print.CompletePutOrDeleteLectureInBasket(1, Console.CursorTop, Constants.DELETE);
-                    for (int count = 0; count < selectedLecture.Count; count++) { Console.SetCursorPosition(0, 9 + count); print.ClearCurrentConsoleLine(); }
-                    selectedLecture.RemoveAt(Console.CursorTop - 10);
-                    print.Lectures(selectedLecture, 9);
+                    selectedLecture.RemoveAt(Console.CursorTop - 9);
+                    for (int count = 0; count < selectedLecture.Count + 1; count++) { Console.SetCursorPosition(0, 9 + count); print.ClearCurrentConsoleLine(); }
+                    if (selectedLecture.Count != 0) print.Lectures(selectedLecture, 9);
+                    else { print.PrintSentence("나가기(ESC)"); tools.WaitUntilGetEscapeKey(); return selectedLecture; }
                     isFirstLoop = true;
                 }
                 else print.BlockCursorMove(2, "▷");                                                                     // 입력 무시
@@ -288,7 +289,7 @@ namespace EnSharpPortal.Source.Function
 
                 keyInfo = Console.ReadKey();
 
-                if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(10, 12, 3, '▷');               // 위로 커서 이동
+                if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(10, 12, 3, 3, '▷');            // 위로 커서 이동
                 else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(10, 12, 3, 3, '▷');   // 밑으로 커서 이동
                 else if (keyInfo.Key == ConsoleKey.Escape) return enrolledLecture;                   // 나가기
                 else if (keyInfo.Key == ConsoleKey.Enter)                                            // 기능 선택

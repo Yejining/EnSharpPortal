@@ -19,10 +19,11 @@ namespace EnSharpPortal.Source.Function
         /// <param name="startingLine">첫 선택지가 위치한 줄</param>
         /// <param name="interval">줄간격</param>
         /// <param name="pointer">포인터</param>
-        public void UpArrow(int cursorLocation, int startingLine, int interval, char pointer)
+        public void UpArrow(int cursorLocation, int startingLine, int countOfOption, int interval, char pointer)
         {
             print.ClearOneLetter(cursorLocation);
             if (Console.CursorTop > startingLine) Console.SetCursorPosition(cursorLocation, Console.CursorTop - interval);
+            else if (Console.CursorTop == startingLine) Console.SetCursorPosition(cursorLocation, startingLine + (interval * (countOfOption - 1)));
             Console.Write(pointer);
         }
 
@@ -38,6 +39,7 @@ namespace EnSharpPortal.Source.Function
         {
             print.ClearOneLetter(cursorLocation);
             if (Console.CursorTop < startingLine + (interval * (countOfOption - 1))) Console.SetCursorPosition(cursorLocation, Console.CursorTop + interval);
+            else if (Console.CursorTop == startingLine + (interval * (countOfOption - 1))) Console.SetCursorPosition(cursorLocation, startingLine);
             Console.Write(pointer);
         }
 
@@ -92,6 +94,17 @@ namespace EnSharpPortal.Source.Function
                 else if (keyInfo.Key == ConsoleKey.Tab) return Constants.TAB;
                 else if (keyInfo.Key == ConsoleKey.Escape) return Constants.ESCAPE;
             }
+        }
+
+        /// <summary>
+        /// 프로그램의 종료 여부를 알려주는 메소드입니다.
+        /// </summary>
+        /// <param name="cursorTop">현재 커서가 위치한 줄 정보</param>
+        /// <returns>프로그램 종료 여부</returns>
+        public bool IsEnd(int cursorTop)
+        {
+            if (((cursorTop / 2) - 5) == Constants.CLOSE_PROGRAM) return true;
+            else return false;
         }
 
         /// <summary>
