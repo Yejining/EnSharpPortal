@@ -18,10 +18,12 @@ namespace EnSharpPortal.Source.Function
 
         /// <summary>
         /// 강의 시간표를 조회하는 메소드입니다.
-        /// 강의 시간표 조회, 관심과목 담기, 수강신청 기능에서 사용됩니다.
+        /// 강의 시간표 조회, 관심과목 담기 기능에서 사용됩니다.
         /// </summary>
         /// <param name="mode">기능</param>
-        /// <param name="classes">강의 시간표</param>
+        /// <param name="lectureSchedule">강의 시간표</param>
+        /// <param name="basket">관심과목</param>
+        /// <returns>검색된 강의 목록</returns>
         public List<ClassVO> InquireLectureSchedule(int mode, List<ClassVO> lectureSchedule, List<ClassVO> basket)
         {
             List<ClassVO> searchedLecture = new List<ClassVO>();
@@ -68,10 +70,17 @@ namespace EnSharpPortal.Source.Function
             searchedLecture = getValue.SearchLectureByCondition(mode, lectureSchedule, basket, department, serialNumber, lectureName, grade, professor);
             print.SearchedLectureSchedule(mode, Constants.ALL, searchedLecture, department, serialNumber, lectureName, grade, professor);
             
-            if (mode == Constants.LECTURE_SEARCH) return lectureSchedule;
+            if (mode == Constants.LECTURE_SEARCH) { tools.WaitUntilGetEscapeKey(); return lectureSchedule; }
             else return PutLectureInBasketOrSignUpLecture(Constants.PUT_LECTURE_IN_BASKET, searchedLecture);
         }
 
+        /// <summary>
+        /// 수강 신청 기능을 담당하는 메소드입니다.
+        /// </summary>
+        /// <param name="lectureSchedule">강의 시간표</param>
+        /// <param name="basket">관심과목으로 지정된 강의 리스트</param>
+        /// <param name="enrolledLecture">수강신청된 강의 리스트</param>
+        /// <returns>갱신된 수강신청 강의 리스트</returns>
         public List<ClassVO> SignUpLecture(List<ClassVO> lectureSchedule, List<ClassVO> basket, List<ClassVO> enrolledLecture)
         {
             List<ClassVO> searchedLecture = new List<ClassVO>();
@@ -88,6 +97,7 @@ namespace EnSharpPortal.Source.Function
 
             while (true)
             {
+                // 검색 기준 선택받음
                 searchMethod = getValue.DropBox(22, 11, Constants.SIGN_UP_CLASS);
                 if (searchMethod == -1) return enrolledLecture;
 
@@ -95,6 +105,7 @@ namespace EnSharpPortal.Source.Function
                 Console.SetCursorPosition(0, Console.CursorTop + 2);
                 menu = getValue.MenuWord(searchMethod);
 
+                // 검색 조건 정보 입력받음
                 switch (searchMethod)
                 {
                     case Constants.MAJOR:
@@ -121,21 +132,15 @@ namespace EnSharpPortal.Source.Function
                         print.ColorMenu(Constants.NONE, Constants.NONE, Constants.PROFESSOR, Console.CursorTop);
                         professor = getValue.Information(Console.CursorLeft, Console.CursorTop, Constants.PROFESSOR, 8);
                         if (string.Compare(professor, "@입력취소@") == 0) return enrolledLecture;
-                        break;
-                    case Constants.BASKET:
-                        print.SearchedLectureSchedule(Constants.SIGN_UP_CLASS, searchMethod, basket, department, serialNumber, lectureName, grade, professor);
-                        return PutLectureInBasketOrSignUpLecture(Constants.SIGN_UP_CLASS, basket);
+                        break;                        
                 }
                 
+                // 강의시간표 조회버튼 출력
                 print.ColorMenu(menu, 13, Constants.CHECK, 16);
 
+                // 다음단계 결정
                 next = getValue.EnterOrTab();
-                if (next == Constants.ENTER)
-                {
-                    Console.SetCursorPosition(0, 25);
-                    print.ClearCurrentConsoleLine();
-                    break;
-                }
+                if (next == Constants.ENTER) break;
                 if (next == Constants.ESCAPE) return enrolledLecture;
                 if (next == Constants.TAB)
                 {
@@ -146,6 +151,14 @@ namespace EnSharpPortal.Source.Function
                 }
             }
             
+            // '관심과목 담기'로 강의 시간표 검색할 경우
+            if (searchMethod == Constants.BASKET)
+            {
+                print.SearchedLectureSchedule(Constants.SIGN_UP_CLASS, searchMethod, basket, department, serialNumber, lectureName, grade, professor);
+                return PutLectureInBasketOrSignUpLecture(Constants.SIGN_UP_CLASS, basket);
+            }
+
+            // '관심과목 담기'로 검색하지 않는 경우 해당 조건에 따라 강의 검색
             searchedLecture = getValue.SearchLectureByCondition(Constants.SIGN_UP_CLASS, lectureSchedule, enrolledLecture, department, serialNumber, lectureName, grade, professor);
             
             print.SearchedLectureSchedule(Constants.SIGN_UP_CLASS, searchMethod, searchedLecture, department, serialNumber, lectureName, grade, professor);
@@ -153,7 +166,7 @@ namespace EnSharpPortal.Source.Function
         }
 
         /// <summary>
-        /// 관심과목을 담기 혹은 수강신청 기능을 수행하는 메소드입니다.
+        /// 관심과목 담기 혹은 수강신청 기능을 수행하는 메소드입니다.
         /// </summary>
         /// <param name="mode">관심과목 담기 혹은 수강신청</param>
         /// <param name="searchedLecture">검색된 강의</param>
@@ -169,34 +182,36 @@ namespace EnSharpPortal.Source.Function
             Console.SetCursorPosition(2, cursorTop);
             Console.Write('▷');
             
+            // 방향키 및 엔터, ESC키를 이용해 기능 수행
             while (true)
             {
                 ConsoleKeyInfo keyInfo = Console.ReadKey();
                 
-                if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(2, cursorTop, 1, '▷');
-                else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(2, cursorTop, searchedLecture.Count, 1, '▷');
-                else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(2, "▷"); return selectedLecture; }
-                else if (keyInfo.Key == ConsoleKey.Enter)
+                if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(2, cursorTop, 1, '▷');                                 // 위로 커서 옮김
+                else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(2, cursorTop, searchedLecture.Count, 1, '▷'); // 밑으로 커서 옮김
+                else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(2, "▷"); return selectedLecture; }       // 나가기
+                else if (keyInfo.Key == ConsoleKey.Enter)                                                                    // 해당 강의 선택
                 {
-                    if (getValue.IsValidLecture(searchedLecture[Console.CursorTop - cursorTop], selectedLecture, mode))
+                    if (getValue.IsValidLecture(searchedLecture[Console.CursorTop - cursorTop], selectedLecture, mode))      // - 강의 선택 성공
                     {
                         selectedLecture.Add(searchedLecture[Console.CursorTop - cursorTop]);
                         print.CompletePutOrDeleteLectureInBasket(1, Console.CursorTop, Constants.PUT);
                     }
-                    else print.CompletePutOrDeleteLectureInBasket(1, Console.CursorTop, Constants.FAIL);
+                    else print.CompletePutOrDeleteLectureInBasket(1, Console.CursorTop, Constants.FAIL);                     // - 강의 선택 실패
                 }
                 else print.BlockCursorMove(2, "▷");
 
-                if (!getValue.IsValidLecture(searchedLecture[Console.CursorTop - cursorTop], selectedLecture, mode))
+                if (!getValue.IsValidLecture(searchedLecture[Console.CursorTop - cursorTop], selectedLecture, mode))         // 입력 무시 
                     print.NonAvailableLectureMark(1, Console.CursorTop);
             }
         }
 
         /// <summary>
-        /// 관심과목으로 담은 강의 리스트를 보여주고, 삭제하는 기능을 가진 메소드입니다.
+        /// 관심과목으로 담긴 강의를 관리하거나 수강신청된 강의를 관리하는 메소드입니다.
         /// </summary>
-        /// <param name="basket">관심과목에 담은 강의 리스트</param>
-        /// <returns>갱신된 관심과목 강의 리스트</returns>
+        /// <param name="mode">기능 모드</param>
+        /// <param name="selectedLecture">선택된 강의</param>
+        /// <returns>갱신된 선택된 강의</returns>
         public List<ClassVO> ManageSelectedLecture(int mode, List<ClassVO> selectedLecture)
         {
             ConsoleKeyInfo keyInfo;
@@ -207,6 +222,7 @@ namespace EnSharpPortal.Source.Function
 
             print.SelectedLecture(mode, selectedLecture);
 
+            // 방향키 및 엔터, ESC키를 이용해 기능 수행
             while (true)
             {
                 if (isFirstLoop)
@@ -218,10 +234,10 @@ namespace EnSharpPortal.Source.Function
 
                 keyInfo = Console.ReadKey();
 
-                if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(2, 9, 1, '▷');
-                else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(2, 9, selectedLecture.Count, 1, '▷');
-                else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(2, "▷"); break; }
-                else if (keyInfo.Key == ConsoleKey.Enter)
+                if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(2, 9, 1, '▷');                                     // 위로 커서 옮김
+                else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(2, 9, selectedLecture.Count, 1, '▷');     // 밑으로 커서 내림
+                else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(2, "▷"); break; }                    // 나가기
+                else if (keyInfo.Key == ConsoleKey.Enter)                                                                // 리스트에서 강의 삭제
                 {
                     print.CompletePutOrDeleteLectureInBasket(1, Console.CursorTop, Constants.DELETE);
                     for (int count = 0; count < selectedLecture.Count; count++) { Console.SetCursorPosition(0, 9 + count); print.ClearCurrentConsoleLine(); }
@@ -229,12 +245,18 @@ namespace EnSharpPortal.Source.Function
                     print.Lectures(selectedLecture, 9);
                     isFirstLoop = true;
                 }
-                else print.BlockCursorMove(2, "▷");
+                else print.BlockCursorMove(2, "▷");                                                                     // 입력 무시
             }
 
             return selectedLecture;
         }
 
+        /// <summary>
+        /// '내 시간표 관리'기능을 수행하는 메소드입니다.
+        /// 시간표 보기, 시간표 저장, 시간표 관리 기능을 수행합니다.
+        /// </summary>
+        /// <param name="enrolledLecture">수강신청된 강의 리스트</param>
+        /// <returns>갱신된 수강신청 강의 리스트</returns>
         public List<ClassVO> ManageEnrolledLecture(List<ClassVO> enrolledLecture) 
         {
             ConsoleKeyInfo keyInfo;
@@ -256,14 +278,21 @@ namespace EnSharpPortal.Source.Function
 
                 keyInfo = Console.ReadKey();
 
-                if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(10, 12, 3, '▷');
-                else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(10, 12, 3, 3, '▷');
-                else if (keyInfo.Key == ConsoleKey.Escape) return enrolledLecture;
-                else if (keyInfo.Key == ConsoleKey.Enter) { enrolledLecture = GoNextFunction((Console.CursorTop - 12) / 3, enrolledLecture); isFirstLoop = true; }
-                else print.BlockCursorMove(10, "▷");
+                if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(10, 12, 3, '▷');               // 위로 커서 이동
+                else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(10, 12, 3, 3, '▷');   // 밑으로 커서 이동
+                else if (keyInfo.Key == ConsoleKey.Escape) return enrolledLecture;                   // 나가기
+                else if (keyInfo.Key == ConsoleKey.Enter)                                            // 기능 선택
+                { enrolledLecture = GoNextFunction((Console.CursorTop - 12) / 3, enrolledLecture); isFirstLoop = true; }
+                else print.BlockCursorMove(10, "▷");                                                // 입력 무시
             }
         }
 
+        /// <summary>
+        /// '내 시간표 관리'에서 다음 기능을 선택하는 메소드입니다.
+        /// </summary>
+        /// <param name="cursorTop">커서 정보(들여쓰기)</param>
+        /// <param name="enrolledLecture">수강신청된 강의 리스트</param>
+        /// <returns>갱신된 수강신청 강의 리스트</returns>
         public List<ClassVO> GoNextFunction(int cursorTop, List<ClassVO> enrolledLecture)
         {
             switch (cursorTop)
@@ -281,6 +310,11 @@ namespace EnSharpPortal.Source.Function
             }
         }
 
+        /// <summary>
+        /// 수강신청된 강의를 엑셀파일로 저장하는 메소드입니다.
+        /// </summary>
+        /// <param name="enrolledLecture">수강신청된 강의 리스트</param>
+        /// <returns>수강신청된 강의 리스트</returns>
         public List<ClassVO> SaveMyLectureSchedule(List<ClassVO> enrolledLecture)
         {
             string fileName;
@@ -288,11 +322,14 @@ namespace EnSharpPortal.Source.Function
 
             print.SaveLectureIntoFileBackground();
 
+            // 파일 이름 입력 받음
             fileName = getValue.Information(23, 11, Constants.FILE_NAME, 10);
             if (string.Compare(fileName, "@입력취소@") == 0) return enrolledLecture;
 
+            // 수강신청된 강의 리스트를 배열로 정리
             excelFile = getValue.LectureInExcelForm(enrolledLecture, excelFile);
 
+            // 엑셀 파일로 저장
             fileIOManager.CreateExcelFile(fileName, excelFile);
 
             Console.Write("끝내려면 엔터키를 누르세요 : ");

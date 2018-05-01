@@ -9,13 +9,11 @@ namespace EnSharpPortal.Source.Data
     {
         public const int NOBODY = 0;
 
-        public static string[] HOME_SENTENCES = { "","","","",
+        public static string[] HOME_SENTENCES =
+        {
+            "","","","",
             "엔샵 포탈", "", "ENJOY C SHARP!", "","","",
-            //"아이디(ID)    8자리 숫자     ┏       ┓",
-            "아이디(ID)                              ",
-            "",
-            //"                                로그인  ",
-            //"비밀번호(PW)  입력           ┗       ┛",
+            "아이디(ID)                              ", "",
             "비밀번호(PW)                            ",
             "", "", "", "",
             "+ 학생은 학번, 관리자는 포털 아이디로     ",

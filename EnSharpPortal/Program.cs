@@ -4,13 +4,15 @@ using System.Linq;
 using System.Text;
 
 using EnSharpPortal.Source.Main;
-using EnSharpPortal.Source.IO;
-using EnSharpPortal.Source.Data;
 
 namespace EnSharpPortal
 {
     class Program
     {
+        /// <summary>
+        /// 포탈 프로그램을 시작합니다.
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
             Home home = new Home();
@@ -18,21 +20,6 @@ namespace EnSharpPortal
             //home.RunPortal();
 
             home.RunPortalWithoutLogIn();
-
-            //ConsoleKeyInfo keyInfo;
-
-            //while (true)
-            //{
-            //    keyInfo = Console.ReadKey();
-
-
-            //    Console.Write(System.Text.ASCIIEncoding.Unicode.GetByteCount(keyInfo.KeyChar.ToString()));
-
-            //    if (keyInfo.Key == ConsoleKey.Enter) break;
-            //}
-
-
-
         }
     }
 }

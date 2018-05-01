@@ -53,6 +53,10 @@ namespace EnSharpPortal.Source.IO
             Console.SetCursorPosition(0, 0);
         }
 
+        /// <summary>
+        /// 인자로 받은 문자열을 가운데정렬하여 출력하는 메소드입니다.
+        /// </summary>
+        /// <param name="sentence">출력할 문자열</param>
         public void PrintSentence(string sentence)
         {
             int leftCursor;
@@ -64,6 +68,10 @@ namespace EnSharpPortal.Source.IO
             Console.SetCursorPosition(0, 0);
         }
 
+        /// <summary>
+        /// 사용자에게 ID나 Password를 물어보는 메소드입니다.
+        /// </summary>
+        /// <param name="idOrPassword">아이디 혹은 패스워드</param>
         public void AskIDOrPassword(int idOrPassword)
         {
             Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -100,8 +108,17 @@ namespace EnSharpPortal.Source.IO
             PrintSentences(Data.Constants.USER_VERSION_MENU);
         }
 
+        /// <summary>
+        /// 지금 검색하는 검색 조건의 색을 칠하는 메소드입니다.
+        /// 이전 검색 조건은 원래 색으로 바꾸어줍니다.
+        /// </summary>
+        /// <param name="modeToGray">원래 색으로 바꿀 검색 조건</param>
+        /// <param name="grayCursorTop">원래 색으로 바꿀 텍스트의 줄 정보</param>
+        /// <param name="modeToHighlight">색칠할 검색 조건</param>
+        /// <param name="highlightCursorTop">색칠할 텍스트의 줄 정보</param>
         public void ColorMenu(int modeToGray, int grayCursorTop, int modeToHighlight, int highlightCursorTop)
         {
+            // 원래 색으로 바꿀 검색 조건이 있을 경우 해당 텍스트의 색을 원래 색으로 변환
             if (modeToGray != Constants.NONE)
             {
                 Console.ForegroundColor = ConsoleColor.Gray;
@@ -109,6 +126,7 @@ namespace EnSharpPortal.Source.IO
                 Console.Write(Constants.SEARCHING_MENU[modeToGray - 1]);
             }
 
+            // 강조할 검색 조건의 텍스트 색 변환
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.SetCursorPosition(6, highlightCursorTop);
             if (modeToHighlight != Constants.CHECK) Console.Write(Constants.SEARCHING_MENU[modeToHighlight - 1]);
@@ -116,12 +134,22 @@ namespace EnSharpPortal.Source.IO
             Console.ForegroundColor = ConsoleColor.Gray;
         }
 
+        /// <summary>
+        /// 지금 검색하는 검색 조건의 색을 칠하는 메소드입니다.
+        /// 이전 검색 조건은 원래 색으로 바꾸어줍니다.
+        /// </summary>
+        /// <param name="menu">이전 검색 조건</param>
+        /// <param name="grayCursorTop">원래 색으로 바꿀 텍스트의 줄 정보</param>
+        /// <param name="modeToHighlight">색칠할 검색 조건</param>
+        /// <param name="highlightCursorTop">색칠할 텍스트의 줄 정보</param>
         public void ColorMenu(string menu, int grayCursorTop, int modeToHighlight, int highlightCursorTop)
         {
+            // 원래 색으로 바꿀 텍스트의 색을 원래 색으로 변환
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.SetCursorPosition(6, grayCursorTop);
             Console.Write(menu);
 
+            // 강조할 텍스트가 있을 경우 해당 텍스트 강조
             if (modeToHighlight != Constants.NONE)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
@@ -147,6 +175,10 @@ namespace EnSharpPortal.Source.IO
             PrintLectureSearchMenuAndOption(mode);
         }
 
+        /// <summary>
+        /// 강의 시간표 열람 혹은 관심과목 담기 실행시 검색할 강의들의 조건과 가이드라인을 출력해주는 메소드입니다.
+        /// </summary>
+        /// <param name="mode">수행하는 기능 모드</param>
         public void PrintLectureSearchMenuAndOption(int mode)
         {
             Console.SetCursorPosition(6, 11);
@@ -161,12 +193,12 @@ namespace EnSharpPortal.Source.IO
 
             for (int sentence = 0; sentence < Constants.SEARCHING_MENU.Length; sentence++)
             {
-                if (sentence % 2 == 0)
+                if (sentence % 2 == 0)  // 조건 출력
                 {
                     Console.ForegroundColor = ConsoleColor.Gray;
                     Console.Write(Constants.SEARCHING_MENU[sentence]);
                 }
-                else
+                else                     // 가이드라인 출력
                 {
                     Console.ForegroundColor = ConsoleColor.DarkGray;
                     Console.WriteLine(Constants.SEARCHING_MENU[sentence]);
@@ -175,6 +207,9 @@ namespace EnSharpPortal.Source.IO
             }
         }
 
+        /// <summary>
+        /// '내 시간표 관리' 에서 메뉴들을 출력해주는 메소드입니다. 
+        /// </summary>
         public void ManageEnrolledLectureMenu()
         {
             SetWindowSmallSize();
@@ -185,6 +220,9 @@ namespace EnSharpPortal.Source.IO
             PrintSentences(Constants.MY_SCHEDULE_MENU);
         }
 
+        /// <summary>
+        /// 시간표 저장 기능을 수행할 때 타이틀과 질문, 가이드라인을 출력해주는 메소드입니다.
+        /// </summary>
         public void SaveLectureIntoFileBackground()
         {
             SetWindowSmallSize();
@@ -221,6 +259,11 @@ namespace EnSharpPortal.Source.IO
             Lectures(classes, Console.CursorTop);
         }
 
+        /// <summary>
+        /// 강의들을 출력해주는 메소드입니다.
+        /// </summary>
+        /// <param name="lectures">강의 리스트</param>
+        /// <param name="cursorTop">출력 시작 커서 위치</param>
         public void Lectures(List<ClassVO> lectures, int cursorTop)
         {
             StringBuilder name = new StringBuilder();
@@ -267,6 +310,8 @@ namespace EnSharpPortal.Source.IO
         /// <summary>
         /// 강의 시간표 검색 결과를 나타낼 때 배경을 출력해주는 메소드입니다.
         /// </summary>
+        /// <param name="mode">기능</param>
+        /// <param name="searchMethod">mode가 수강신청일 경우 해당, 사용자가 선택한 검색 조건</param>
         /// <param name="department">사용자가 검색시 입력한 개설학과전공</param>
         /// <param name="serialNumber">사용자가 검색시 입력한 학수번호</param>
         /// <param name="lectureName">사용자가 검색시 입력한 강의명</param>
@@ -283,6 +328,7 @@ namespace EnSharpPortal.Source.IO
                 Console.SetCursorPosition(120, Console.CursorTop);
             }
 
+            // 검색 조건이 '전체'로 설정되어있거나 입력값이 없는 경우
             searchingCondition.Add(Constants.DEPARTMENT[department]);
             if (string.Compare(serialNumber, "0") == 0) serialNumber = string.Copy("전체 학수번호");
             searchingCondition.Add(serialNumber);
@@ -300,6 +346,7 @@ namespace EnSharpPortal.Source.IO
                 return;
             }
 
+            // 배경 출력
             Console.SetCursorPosition(7, 2);
             for (int item = 0; item < Constants.SEARCHING_MENU_IN_SEARCHING_MODE.Count(); item++)
             {
@@ -318,6 +365,12 @@ namespace EnSharpPortal.Source.IO
             }
         }
 
+        /// <summary>
+        /// 현재 커서가 위치한 강의가 선택 불가능한 강의일 경우
+        /// 포인터를 선택 불가능 마크로 바꿔주는 메소드입니다.
+        /// </summary>
+        /// <param name="cursorLeft">커서 위치(들여쓰기)</param>
+        /// <param name="cursorTop">커서 위치(줄)</param>
         public void NonAvailableLectureMark(int cursorLeft, int cursorTop)
         {
             Console.SetCursorPosition(cursorLeft, cursorTop);
@@ -325,6 +378,12 @@ namespace EnSharpPortal.Source.IO
             Console.SetCursorPosition(cursorLeft + 1, cursorTop);
         }
 
+        /// <summary>
+        /// 사용자가 선택한 강의가 등록되거나 등록 거부될 경우 그 결과를 출력해주는 메소드입니다.
+        /// </summary>
+        /// <param name="cursorLeft">커서 정보(들여쓰기)</param>
+        /// <param name="cursorTop">커서 정보(줄)</param>
+        /// <param name="mode">등록완료 혹은 등록거부</param>
         public void CompletePutOrDeleteLectureInBasket(int cursorLeft, int cursorTop, int mode)
         {
             Console.SetCursorPosition(cursorLeft, cursorTop);
@@ -339,11 +398,13 @@ namespace EnSharpPortal.Source.IO
         }
 
         /// <summary>
-        /// 관심과목으로 담겨진 강의 시간표들을 출력하는 메소드입니다.
+        /// 선택된 강의 시간표들을 출력하는 메소드입니다.
         /// </summary>
-        /// <param name="basket">관심과목 수업 리스트</param>
+        /// <param name="mode">기능</param>
+        /// <param name="selectedLecture">선택된 강의 리스트</param>
         public void SelectedLecture(int mode, List<ClassVO> selectedLecture)
         {
+            // 엔샵 타이틀 출력
             Console.SetCursorPosition(120, 2);
             foreach (string title in Constants.ENSHARP_TITLE_IN_SEARCH_MODE)
             {
@@ -351,6 +412,7 @@ namespace EnSharpPortal.Source.IO
                 Console.SetCursorPosition(120, Console.CursorTop);
             }
 
+            // 기능 타이틀 출력
             Console.SetCursorPosition(7, 3);
             if (mode == Constants.MANAGE_BASKET) Console.Write("| 관심과목 관리 |");
             else Console.Write("| 내 시간표 관리 |");
@@ -360,28 +422,43 @@ namespace EnSharpPortal.Source.IO
             Console.SetCursorPosition(1, 7);
             Console.Write("삭제");
 
+            // 강의 출력
             Lectures(selectedLecture, 9);
         }
 
+        /// <summary>
+        /// 수강신청시 사용자가 검색 조건을 선택하면 해당 검색 조건을 출력해주는 메소드입니다. 
+        /// </summary>
+        /// <param name="cursorLeft">커서 정보(들여쓰기)</param>
+        /// <param name="cursorTop">커서 정보(줄)</param>
+        /// <param name="index">검색 조건</param>
         public void Category(int cursorLeft, int cursorTop, int index)
         {
             Console.SetCursorPosition(cursorLeft, cursorTop);
             Console.Write(Constants.SIGN_UP_CLASSES_SELECTION[index] + " | ");
         }
 
+        /// <summary>
+        /// 사용자의 시간표를 출력해주는 메소드입니다.
+        /// </summary>
+        /// <param name="enrolledLecture"></param>
         public void MyLectureSchedule(List<ClassVO> enrolledLecture)
         {
             int color = 0;
             ConsoleColor colorForLecture;
 
+            // 표 출력
             Template();
 
+            // 시간표 출력
             foreach (ClassVO lecture in enrolledLecture)
             {
+                // 색 고르기
                 colorForLecture = Constants.COLORS[color];
                 if (color == Constants.COLORS.Length - 1) color = 0;
                 else color++;
                 
+                // 색칠 및 수업명, 강의실 출력
                 for (int row = 0; row < lecture.TimeOfClass.GetLength(0); row++)
                 {
                     ColorLectureTimeTable(lecture, row, colorForLecture);
@@ -392,6 +469,11 @@ namespace EnSharpPortal.Source.IO
             Console.BackgroundColor = ConsoleColor.Black;
         }
 
+        /// <summary>
+        /// 시간표 출력시 수업명과 강의실을 출력하는 메소드입니다.
+        /// </summary>
+        /// <param name="lecture">강의</param>
+        /// <param name="row">수업 요일</param>
         public void WriteLectureNameAndPlace(ClassVO lecture, int row)
         {
             int cursorLeft, cursorTop;
@@ -406,10 +488,12 @@ namespace EnSharpPortal.Source.IO
             {
                 if (lecture.TimeOfClass[row, column])
                 {
+                    // 출력할 위치 계산
                     cursorLeft = (22 * row) + 6;
                     if (column % 2 == 0) cursorTop = (5 * (column / 2)) + 10;
                     else cursorTop = (5 * ((column - 1) / 2)) + 12;
 
+                    // 이름 및 강의실 출력
                     if (!isNamePrinted) { LectureName(cursorLeft, cursorTop, lecture.LectureName); isNamePrinted = true; }
                     if (isNamePrinted && column == 18) LectureName(cursorLeft, cursorTop, lecture.LectureName);
                     if (!isFirstLectureRoomPrinted) { LectureRoom(cursorLeft, Console.CursorTop + 1, lecture.ClassRooms[0]); isFirstLectureRoomPrinted = true; }
@@ -418,6 +502,12 @@ namespace EnSharpPortal.Source.IO
             }
         }
 
+        /// <summary>
+        /// 시간표 출력시 수업 시간대의 배경을 색칠하는 메소드입니다.
+        /// </summary>
+        /// <param name="lecture">수업</param>
+        /// <param name="row">요일</param>
+        /// <param name="colorForLecture">색칠할 색</param>
         public void ColorLectureTimeTable(ClassVO lecture, int row, ConsoleColor colorForLecture)
         {
             int cursorLeft, cursorTop;
@@ -426,16 +516,20 @@ namespace EnSharpPortal.Source.IO
             {
                 if (lecture.TimeOfClass[row, column])
                 {
+                    // 색칠할 위치 계산
                     cursorLeft = (22 * row) + 6;
                     if (column % 2 == 0) cursorTop = (5 * (column / 2)) + 10;
                     else cursorTop = (5 * ((column - 1) / 2)) + 12;
 
+                    // 색칠
                     Console.BackgroundColor = colorForLecture;
                     Console.SetCursorPosition(cursorLeft, cursorTop);
                     Console.WriteLine(new string(' ', 20));
                     Console.SetCursorPosition(cursorLeft, cursorTop + 1);
                     Console.WriteLine(new string(' ', 20));
-                    if (CountOfDayOfWeek(lecture.LectureSchedule) < 3 && lecture.TimeOfClass[row, column + 1])
+
+                    // 경계선 색칠
+                    if (CountOfDayOfWeek(lecture.LectureSchedule) < 3 && lecture.TimeOfClass[row, column + 1]) 
                     {
                         Console.SetCursorPosition(cursorLeft, cursorTop + 2);
                         Console.WriteLine(new string(' ', 20));
@@ -449,23 +543,24 @@ namespace EnSharpPortal.Source.IO
             }
         }
 
+        /// <summary>
+        /// 강의실을 출력하는 메소드입니다.
+        /// </summary>
+        /// <param name="cursorLeft">커서 정보(들여쓰기)</param>
+        /// <param name="cursorTop">커서 정보(줄)</param>
+        /// <param name="lectureRoom">강의실</param>
         public void LectureRoom(int cursorLeft, int cursorTop, string lectureRoom)
         {
             Console.SetCursorPosition(cursorLeft, cursorTop);
             Console.Write(lectureRoom);
         }
 
-        public int CountOfDayOfWeek(string lectureTime)
-        {
-            int count = 0;
-            string pattern = "[가-힣]";
-
-            foreach (char day in lectureTime)
-                if (System.Text.RegularExpressions.Regex.IsMatch(day.ToString(), pattern)) count++;
-
-            return count;
-        }
-
+        /// <summary>
+        /// 강의명을 출력하는 메소드입니다.
+        /// </summary>
+        /// <param name="cursorLeft">커서 정보(들여쓰기)</param>
+        /// <param name="cursorTop">커서 정보(줄)</param>
+        /// <param name="lectureName">강의명</param>
         public void LectureName(int cursorLeft, int cursorTop, string lectureName)
         {
             string name1 = lectureName;
@@ -474,7 +569,7 @@ namespace EnSharpPortal.Source.IO
             int indexToCut = 0;
 
             Console.SetCursorPosition(cursorLeft, cursorTop);
-            if (byteOfName > 20)
+            if (byteOfName > 20) // 강의명이 길면 자른 후 출력
             {
                 for (indexToCut = 0; indexToCut < lectureName.Length; indexToCut++)
                 {
@@ -490,6 +585,9 @@ namespace EnSharpPortal.Source.IO
             else Console.Write(lectureName);
         }
 
+        /// <summary>
+        /// 시간표 출력시 표를 출력하는 메소드입니다.
+        /// </summary>
         public void Template()
         {
             Console.SetWindowSize(160, 35);
@@ -639,17 +737,45 @@ namespace EnSharpPortal.Source.IO
             return leftCursor;
         }
 
+        /// <summary>
+        /// 검색창을 비우는 메소드입니다.
+        /// </summary>
+        /// <param name="cursorLeft">커서 정보(들여쓰기)</param>
+        /// <param name="cursorTop">커서 정보(줄)</param>
         public void ClearSearchBar(int cursorLeft, int cursorTop)
         {
             Console.SetCursorPosition(cursorLeft, cursorTop);
             Console.Write(new string(' ', Console.WindowWidth - cursorLeft));
         }
 
+        /// <summary>
+        /// 사용자가 입력한 검색어를 출력하는 메소드입니다.
+        /// </summary>
+        /// <param name="cursorLeft">커서 정보(들여쓰기)</param>
+        /// <param name="cursorTop">커서 정보(줄)</param>
+        /// <param name="answer">사용자가 입력한 검색어</param>
         public void Answer(int cursorLeft, int cursorTop, string answer)
         {
             ClearSearchBar(cursorLeft, cursorTop);
             Console.SetCursorPosition(cursorLeft, cursorTop);
             Console.Write(answer);
+        }
+
+        /// <summary>
+        /// string형의 요일 및 강의시간에 요일을 뜻하는 글자가 몇 글자인지 세는 메소드입니다.
+        /// string에서 한글의 개수를 반환합니다.
+        /// </summary>
+        /// <param name="lectureTime">실습 시간 및 요일</param>
+        /// <returns>요일 수</returns>
+        public int CountOfDayOfWeek(string lectureTime)
+        {
+            int count = 0;
+            string pattern = "[가-힣]";
+
+            foreach (char day in lectureTime)
+                if (System.Text.RegularExpressions.Regex.IsMatch(day.ToString(), pattern)) count++;
+
+            return count;
         }
     }
 }

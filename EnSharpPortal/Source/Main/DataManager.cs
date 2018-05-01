@@ -14,6 +14,9 @@ namespace EnSharpPortal.Source.Main
 
         ClassVO classVO = new ClassVO();
 
+        /// <summary>
+        /// 데이터를 로드하는 메소드입니다. 엑셀파일로부터 강의 리스트를 로드합니다.
+        /// </summary>
         public void LoadData()
         {
             string path = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;

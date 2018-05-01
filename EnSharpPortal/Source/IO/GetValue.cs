@@ -5,14 +5,20 @@ using System.Text;
 
 using EnSharpPortal.Source.Main;
 using EnSharpPortal.Source.Data;
+using EnSharpPortal.Source.Function;
 
 namespace EnSharpPortal.Source.IO
 {
     class GetValue
     {
         Print print = new Print();
-        DataManager dataManager = new DataManager();
+        Tools tools = new Tools();
 
+        /// <summary>
+        /// 생년월일로부터 년도를 구하는 메소드입니다.
+        /// </summary>
+        /// <param name="date">생년월일</param>
+        /// <returns>년도</returns>
         public int Year(string date)
         {
             StringBuilder year = new StringBuilder(date);
@@ -21,6 +27,11 @@ namespace EnSharpPortal.Source.IO
             return Int32.Parse(year.ToString());
         }
 
+        /// <summary>
+        /// 생년월일로부터 월을 구하는 메소드입니다.
+        /// </summary>
+        /// <param name="date">생년월일</param>
+        /// <returns>월</returns>
         public int Month(string date)
         {
             StringBuilder month = new StringBuilder(date);
@@ -30,6 +41,11 @@ namespace EnSharpPortal.Source.IO
             return Int32.Parse(month.ToString());
         }
 
+        /// <summary>
+        /// 생년월일로부터 일을 구하는 메소드입니다.
+        /// </summary>
+        /// <param name="date">생년월일</param>
+        /// <returns>일</returns>
         public int Day(string date)
         {
             StringBuilder day = new StringBuilder(date);
@@ -38,21 +54,31 @@ namespace EnSharpPortal.Source.IO
             return Int32.Parse(day.ToString());
         }
 
+        /// <summary>
+        /// string형의 이수구분을 int형으로 변환해 반환하는 메소드입니다.
+        /// </summary>
+        /// <param name="courseDivision">이수구분</param>
+        /// <returns>이수구분</returns>
         public int CourseDivision(string courseDivision)
         {
             switch (courseDivision)
             {
                 case "전공선택":
-                    return Data.Constants.MAJOR_SELECTION;
+                    return Constants.MAJOR_SELECTION;
                 case "전공필수":
-                    return Data.Constants.MAJOR_ESSENTIAL;
+                    return Constants.MAJOR_ESSENTIAL;
                 case "중핵필수":
-                    return Data.Constants.CORE_ESSENTIAL;
+                    return Constants.CORE_ESSENTIAL;
             }
 
             return 0;
         }
 
+        /// <summary>
+        /// string형의 요일 및 강의시간에서 요일 정보만 추출하는 메소드입니다.
+        /// </summary>
+        /// <param name="lectureTime">요일 및 강의시간</param>
+        /// <returns>강의 요일 정보</returns>
         public List<int> DaysOfClass(string lectureTime)
         {
             List<int> daysOfClass = new List<int>();
@@ -84,6 +110,11 @@ namespace EnSharpPortal.Source.IO
             return daysOfClass;
         }
 
+        /// <summary>
+        /// string형태의 요일 및 강의시간을 배열 형식으로 변환해 반환하는 메소드입니다.
+        /// </summary>
+        /// <param name="lectureTime">요일 및 강의시간</param>
+        /// <returns>배열 형태의 강의 시간</returns>
         public bool[,] TimeOfClass(string lectureTime)
         {
             bool[,] schedule = new bool[5, 24];
@@ -125,6 +156,61 @@ namespace EnSharpPortal.Source.IO
             return schedule;
         }
 
+        /// <summary>
+        /// 배열에 강의시간 정보를 저장하는 메소드입니다.
+        /// </summary>
+        /// <param name="lectureTime">강의 시간 및 요일</param>
+        /// <param name="index">강의 시간 및 요일에서 '-' 문자가 나오는 인덱스</param>
+        /// <returns>강의시간이 저장된 배열</returns>
+        public bool[] SetTimeInArray(string lectureTime, int index)
+        {
+            bool[] timeOfClass = new bool[24];
+            Array.Clear(timeOfClass, 0, timeOfClass.Length);
+
+            int lectureStartTime, lecureEndTime;
+            int indexToStartFillTrue, indexToFinish;
+
+            // 강의 시작시간, 끝나는 시간 저장
+            lectureStartTime = CharToInt(lectureTime[index - 5], lectureTime[index - 4]);
+            lecureEndTime = CharToInt(lectureTime[index + 1], lectureTime[index + 2]);
+
+            // 배열에서 저장 위치의 시작점 구함
+            indexToStartFillTrue = 2 * (lectureStartTime - 9);
+            if (lectureTime[index - 2] == '3') indexToStartFillTrue++;
+
+            // 배열에서 저장 위치의 끝점 구함
+            indexToFinish = 2 * (lecureEndTime - 9);
+            if (lectureTime[index + 4] == '3') indexToFinish++;
+
+            // 배열에 저장
+            for (int i = indexToStartFillTrue; i < indexToFinish; i++)
+                timeOfClass[i] = true;
+
+            return timeOfClass;
+        }
+
+        /// <summary>
+        /// 배열을 복사하는 메소드입니다.
+        /// </summary>
+        /// <param name="sourceArray">복사할 배열</param>
+        /// <param name="destinationArray">복사될 배열</param>
+        /// <param name="destination">복사 위치</param>
+        /// <returns>복사된 배열</returns>
+        public bool[,] CopyArray(bool[] sourceArray, bool[,] destinationArray, int destination)
+        {
+            for (int index = 0; index < sourceArray.Length; index++)
+                destinationArray[destination, index] = sourceArray[index];
+
+            return destinationArray;
+        }
+
+        /// <summary>
+        /// 실습시간이 있는 강의의 경우 실습시간을 시간표 배열에 추가하는 메소드입니다.
+        /// </summary>
+        /// <param name="sourceArray">실습시간 정보가 담긴 배열</param>
+        /// <param name="destinationArray">정보를 저장할 배열</param>
+        /// <param name="dayOfWeek">실습시간 요일</param>
+        /// <returns></returns>
         public bool[,] AppendArray(bool[] sourceArray, bool[,] destinationArray, char dayOfWeek)
         {
             int destination = -1;
@@ -141,6 +227,12 @@ namespace EnSharpPortal.Source.IO
             return destinationArray;
         }
 
+        /// <summary>
+        /// string형의 요일 및 강의시간에 요일을 뜻하는 글자가 몇 글자인지 세는 메소드입니다.
+        /// string에서 한글의 개수를 반환합니다.
+        /// </summary>
+        /// <param name="lectureTime">실습 시간 및 요일</param>
+        /// <returns>요일 수</returns>
         public int CountOfDayOfWeek(string lectureTime)
         {
             int count = 0;
@@ -152,67 +244,28 @@ namespace EnSharpPortal.Source.IO
             return count;
         }
 
-        public string[,] LectureInExcelForm(List<ClassVO> enrolledLecture, string[,] excelFile)
-        {
-            excelFile.Initialize();
-            for (int column = 1; column <= 5; column++) excelFile[0, column] = Constants.DAYS[column - 1];
-            for (int row = 1; row <= 24; row++) excelFile[row, 0] = Constants.TIMES[row - 1];
-
-            foreach (ClassVO lecture in enrolledLecture)
-                for (int row = 0; row < 5; row++)
-                    for (int column = 0; column < 24; column++)
-                        if (lecture.TimeOfClass[row, column])
-                        {
-                            if (CountOfDayOfWeek(lecture.LectureSchedule) == 3 && column >= 18)
-                                excelFile[column + 1, row + 1] = lecture.LectureName + "(" + lecture.ClassRooms[1] + ")";
-                            else excelFile[column + 1, row + 1] = lecture.LectureName + "(" + lecture.ClassRooms[0] + ")";
-                        }
-
-            return excelFile;
-        }
-
-        public bool[] SetTimeInArray(string lectureTime, int index)
-        {
-            bool[] timeOfClass = new bool[24];
-            Array.Clear(timeOfClass, 0, timeOfClass.Length);
-
-            int lectureStartTime, lecureEndTime;
-            int indexToStartFillTrue, indexToFinish;
-
-            lectureStartTime = CharToInt(lectureTime[index - 5], lectureTime[index - 4]);
-            lecureEndTime = CharToInt(lectureTime[index + 1], lectureTime[index + 2]);
-
-            indexToStartFillTrue = 2 * (lectureStartTime - 9);
-            if (lectureTime[index - 2] == '3') indexToStartFillTrue++;
-
-            indexToFinish = 2 * (lecureEndTime - 9);
-            if (lectureTime[index + 4] == '3') indexToFinish++;
-
-            for (int i = indexToStartFillTrue; i < indexToFinish; i++)
-                timeOfClass[i] = true;
-
-            return timeOfClass;
-        }
-
-        public bool[,] CopyArray(bool[] sourceArray, bool[,] destinationArray, int destination)
-        {
-            for (int index = 0; index < sourceArray.Length; index++)
-                destinationArray[destination, index] = sourceArray[index];
-
-            return destinationArray;
-        } 
-
+        /// <summary>
+        /// 문자 2개를 이어붙인 후 숫자로 변환해 반환하는 메소드입니다.
+        /// </summary>
+        /// <param name="letter1">문자1</param>
+        /// <param name="letter2">문자2</param>
+        /// <returns>숫자</returns>
         public int CharToInt(char letter1, char letter2)
         {
             int numberToReturn;
             StringBuilder numbers = new StringBuilder(letter1.ToString());
             numbers.Append(letter2.ToString());
-            
+
             numberToReturn = Int32.Parse(numbers.ToString());
 
             return numberToReturn;
         }
 
+        /// <summary>
+        /// 강의실 문자열에서 각각의 강의실을 추출해 리스트로 만드는 메소드입니다.
+        /// </summary>
+        /// <param name="classroom">강의실</param>
+        /// <returns>강의실 리스트</returns>
         public List<string> ClassRoom(string classroom)
         {
             List<string> classRoom = new List<string>();
@@ -237,19 +290,24 @@ namespace EnSharpPortal.Source.IO
             return classRoom;
         }
 
+        /// <summary>
+        /// string 형태의 강의언어를 int형으로 변환하는 메소드입니다.
+        /// </summary>
+        /// <param name="lectureLanguage">강의언어</param>
+        /// <returns>강의언어</returns>
         public int LectureLanguage(string lectureLanguage)
         {
             if (string.Compare(lectureLanguage, "한국어") == 0)
-                return Data.Constants.KOREAN;
-            else return Data.Constants.ENGLISH;
+                return Constants.KOREAN;
+            else return Constants.ENGLISH;
         }
 
         /// <summary>
         /// 드롭박스에서 원하는 옵션을 선택하는 메소드입니다.
         /// </summary>
-        /// <param name="cursorLeft">커서 설정 변수(들여쓰기)</param>
-        /// <param name="cursorTop">커서 설정 변수(줄)</param>
         /// <param name="mode">사용자가 선택한 검색 모드</param>
+        /// <param name="cursorLeft">커서 설정 변수(들여쓰기)</param>
+        /// <param name="cursorTop">커서 설정 변수(줄)</param>       
         /// <returns>사용자가 선택한 옵션</returns>
         public int DropBox(int cursorLeft, int cursorTop, int mode)
         {
@@ -258,10 +316,12 @@ namespace EnSharpPortal.Source.IO
             int index = 0;
             string[] option;
             
+            // 드롭박스 선택
             if (mode == Constants.SELECT_DEPARTMENT) option = Constants.DEPARTMENT;
             else if (mode == Constants.SELECT_GRADE) option = Constants.GRADE;
             else option = Constants.SIGN_UP_CLASSES_SELECTION;
 
+            // 방향키 및 엔터, ESC키 통해 정보 선택 혹은 나가기
             while (true)
             {
                 Console.SetCursorPosition(cursorLeft, cursorTop);
@@ -298,6 +358,11 @@ namespace EnSharpPortal.Source.IO
             }
         }
 
+        /// <summary>
+        /// 사용자가 강의 검색방법을 선택하면 해당 검색방법을 문자열로 반환해주는 메소드입니다.
+        /// </summary>
+        /// <param name="mode"></param>
+        /// <returns></returns>
         public string MenuWord(int mode)
         {
             switch (mode)
@@ -317,26 +382,13 @@ namespace EnSharpPortal.Source.IO
             }
         }
 
-        public int EnterOrTab()
-        {
-            ConsoleKeyInfo keyInfo;
-
-            while (true)
-            {
-                keyInfo = Console.ReadKey();
-
-                if (keyInfo.Key == ConsoleKey.Enter) return Constants.ENTER;
-                else if (keyInfo.Key == ConsoleKey.Tab) return Constants.TAB;
-                else if (keyInfo.Key == ConsoleKey.Escape) return Constants.ESCAPE;
-            }
-        }
-
         /// <summary>
         /// 사용자가 검색창에 입력한 값을 반환해주는 메소드입니다.
         /// </summary>
         /// <param name="cursorLeft">커서 설정 변수(들여쓰기)</param>
         /// <param name="cursorTop">커서 설정 변수(줄)</param>
         /// <param name="mode">검색 모드</param>
+        /// <param name="limit">검색 입력 최대 길이</param>
         /// <returns>사용자가 입력한 검색어</returns>
         public string Information(int cursorLeft, int cursorTop, int mode, int limit)
         {
@@ -345,6 +397,7 @@ namespace EnSharpPortal.Source.IO
             StringBuilder answer = new StringBuilder();
             ConsoleKeyInfo keyInfo = new ConsoleKeyInfo();
 
+            // 질문 출력
             print.SearchGuideline(Constants.SEARCHING_MENU[mode], cursorLeft, cursorTop);
             Console.SetCursorPosition(cursorLeft, cursorTop);
 
@@ -353,63 +406,29 @@ namespace EnSharpPortal.Source.IO
                 currentCursor = Console.CursorLeft;
                 keyInfo = Console.ReadKey();
 
-                isValid = IsValid(keyInfo, mode);
+                // 키값이 유효한지 검사
+                isValid = tools.IsValid(keyInfo, mode);
 
                 if (answer.Length == 0) print.DeleteGuideLine(cursorLeft, isValid, keyInfo);
 
-                if (keyInfo.Key == ConsoleKey.Escape) return "@입력취소@";
-                else if (keyInfo.Key == ConsoleKey.Backspace) answer = BackspaceInput(cursorLeft, cursorTop, answer);
-                else if (isValid) answer = ValidInput(currentCursor, limit, keyInfo.KeyChar, answer);
-                else if (keyInfo.Key != ConsoleKey.Enter && keyInfo.Key!= ConsoleKey.Tab) print.InvalidInput(keyInfo, currentCursor, cursorTop);
-                else if (keyInfo.Key == ConsoleKey.Enter || keyInfo.Key == ConsoleKey.Tab)
+                if (keyInfo.Key == ConsoleKey.Escape) return "@입력취소@";                                              // 나가기
+                else if (keyInfo.Key == ConsoleKey.Backspace) answer = BackspaceInput(cursorLeft, cursorTop, answer);   // 지우기
+                else if (isValid) answer = ValidInput(currentCursor, limit, keyInfo.KeyChar, answer);                   // 올바른 입력
+                else if (keyInfo.Key != ConsoleKey.Enter && keyInfo.Key!= ConsoleKey.Tab) print.InvalidInput(keyInfo, currentCursor, cursorTop); // 입력 무시
+                else if (keyInfo.Key == ConsoleKey.Enter || keyInfo.Key == ConsoleKey.Tab)                              // 검색 완료
                 {
                     if (answer.Length == 0) print.SearchGuideline(Constants.SEARCHING_MENU[mode], cursorLeft, cursorTop);
                     if (answer.Length == 0 && mode == Constants.SERIAL_NUMBER) return "0";
                     else return answer.ToString();
                 }
 
+                // 검색어 글자가 0자일 경우 가이드라인 출력
                 if (answer.Length == 0)
                 {
                     if (mode == Constants.FILE_NAME) print.SearchGuideline("10자 이내 문자, 숫자", cursorLeft, cursorTop);
                     else print.SearchGuideline(Constants.SEARCHING_MENU[mode], cursorLeft, cursorTop);
                 }
             }
-        }
-
-        public bool IsKorean(ConsoleKeyInfo keyInfo)
-        {
-            if (System.Text.RegularExpressions.Regex.IsMatch(keyInfo.KeyChar.ToString(), Constants.KOREAN_PATTERN))
-                return true;
-            else return false;
-        }
-
-        public bool IsValid(ConsoleKeyInfo keyInfo, int mode)
-        {
-            // 엔터, 탭
-            if (keyInfo.Key == ConsoleKey.Enter) return false;
-            if (keyInfo.Key == ConsoleKey.Tab) return false;
-
-            // 숫자
-            if (System.Text.RegularExpressions.Regex.IsMatch(keyInfo.KeyChar.ToString(), Constants.NUMBER_PATTERN))
-            {
-                if (mode == Constants.PROFESSOR) return false;
-                else return true;
-            }
-            if (mode == Constants.SERIAL_NUMBER) return false;
-
-            // 한글, 영어
-            if (System.Text.RegularExpressions.Regex.IsMatch(keyInfo.KeyChar.ToString(), Constants.ENGLISH_PATTERN)) return true;
-            if (System.Text.RegularExpressions.Regex.IsMatch(keyInfo.KeyChar.ToString(), Constants.KOREAN_PATTERN)) return true;
-            if (mode == Constants.PROFESSOR) return false;
-
-            // 특수기호
-            if (mode == Constants.LECTURE_NAME && (System.Text.RegularExpressions.Regex.IsMatch(keyInfo.KeyChar.ToString(), Constants.SPECIAL_LETTER))) return true;
-            if (mode == Constants.LECTURE_NAME) return false;
-            if (System.Text.RegularExpressions.Regex.IsMatch(keyInfo.KeyChar.ToString(), Constants.INVALID_SPECIAL_LETTER)) return false;
-            if (System.Text.RegularExpressions.Regex.IsMatch(keyInfo.KeyChar.ToString(), Constants.VALID_SPECIAL_LETTER)) return true;
-            if (keyInfo.Key == ConsoleKey.Spacebar) return true;
-
-            return false;
         }
 
         /// <summary>
@@ -512,6 +531,12 @@ namespace EnSharpPortal.Source.IO
             return classes;
         }
 
+        /// <summary>
+        /// 강의 리스트에서 선택된 강의들을 지우는 메소드입니다.
+        /// </summary>
+        /// <param name="lectureSchedule">강의 리스트</param>
+        /// <param name="selectedLecture">선택된 강의 리스트</param>
+        /// <returns>정리된 강의 리스트</returns>
         public List<ClassVO> ClearancedClasses(List<ClassVO> lectureSchedule, List<ClassVO> selectedLecture)
         {
             List<int> indexesToDelete = new List<int>();
@@ -557,45 +582,29 @@ namespace EnSharpPortal.Source.IO
         }
 
         /// <summary>
-        /// 관심과목 담기 혹은 수강신청시 신청하고자 하는 과목이 유효한지의 여부를 검사해주는 메소드입니다.
+        /// 수강신청된 강의를 엑셀파일 형식으로 저장하는 메소드입니다.
         /// </summary>
-        /// <param name="lecture">검사하고 싶은 수업</param>
-        /// <param name="classes">신청한 수업들</param>
-        /// <returns>신청 과목 유효 여부</returns>
-        public bool IsValidLecture(ClassVO lecture, List<ClassVO> classes, int mode)
+        /// <param name="enrolledLecture">수강신청된 강의</param>
+        /// <param name="excelFile">저장할 배열</param>
+        /// <returns>엑셀형식으로 저장된 수강신청 배열</returns>
+        public string[,] LectureInExcelForm(List<ClassVO> enrolledLecture, string[,] excelFile)
         {
-            float sumOfCredit = 0;
+            excelFile.Initialize();
+            for (int column = 1; column <= 5; column++) excelFile[0, column] = Constants.DAYS[column - 1];
+            for (int row = 1; row <= 24; row++) excelFile[row, 0] = Constants.TIMES[row - 1];
 
-            if (classes.Count == 0) return true;
+            // 각 강의마다 배열에 저장
+            foreach (ClassVO lecture in enrolledLecture)
+                for (int row = 0; row < 5; row++)
+                    for (int column = 0; column < 24; column++)
+                        if (lecture.TimeOfClass[row, column])
+                        {
+                            if (CountOfDayOfWeek(lecture.LectureSchedule) == 3 && column >= 18)
+                                excelFile[column + 1, row + 1] = lecture.LectureName + "(" + lecture.ClassRooms[1] + ")";
+                            else excelFile[column + 1, row + 1] = lecture.LectureName + "(" + lecture.ClassRooms[0] + ")";
+                        }
 
-            foreach (ClassVO selectedClass in classes)
-            {
-                sumOfCredit += selectedClass.Credit;
-                if (lecture.SerialNumber == selectedClass.SerialNumber) return false;
-                if (IsOverLapClass(lecture, selectedClass)) return false;
-            }
-
-            if (mode != Constants.SIGN_UP_CLASS && sumOfCredit > 24) return false;
-            if (mode == Constants.SIGN_UP_CLASS && sumOfCredit > 21) return false;
-
-            return true;
+            return excelFile;
         }
-
-        /// <summary>
-        /// 강의1과 강의2의 시간이 일치하는지 여부를 검사합니다.
-        /// </summary>
-        /// <param name="class1"></param>
-        /// <param name="class2"></param>
-        /// <returns></returns>
-        public bool IsOverLapClass(ClassVO class1, ClassVO class2)
-        {
-            for (int row = 0; row < class1.TimeOfClass.GetLength(0); row++)
-                for (int column = 0; column < class1.TimeOfClass.GetLength(1); column++)
-                    if (class1.TimeOfClass[row, column] == class2.TimeOfClass[row, column] && class1.TimeOfClass[row, column] == true)
-                        return true;
-            return false;
-        }
-
-        
     }
 }

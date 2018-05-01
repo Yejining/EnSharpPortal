@@ -11,27 +11,46 @@ namespace EnSharpPortal.Source.Data
     class ClassVO
     {
         FileIOManager fileIOManager = new FileIOManager();
+        
+        int number;                             // 강의 번호
+        private string department;              // 개설학과전공
+        private string serialNumber;            // 학수번호
+        private string divisionClassNumber;     // 분반
+        private string lectureName;             // 교과목명
+        private string courseDivision;          // 이수구분
+        private int grade;                      // 학년
+        private float credit;                   // 학점
+        private string lectureSchedule;         // 요일 및 강의시간
+        private bool[,] timeOfClass;            // 강의시간
+        private string classRoom;               // 강의실
+        private List<string> classRooms;        // 강의실
+        private string professor;               // 교수명
+        private string lectureLanguage;         // 강의언어
 
-        int number;
-        private string department;
-        private string serialNumber;
-        private string divisionClassNumber;
-        private string lectureName;
-        private string courseDivision;
-        private int grade;
-        private float credit;
-        private string lectureSchedule;
-        private bool[,] timeOfClass;
-        private string classRoom;
-        private List<string> classRooms;
-        private string professor;
-        private string lectureLanguage;
-
+        /// <summary>
+        /// ClassVO의 생성자 메소드입니다.
+        /// </summary>
         public ClassVO()
         {
 
         }
 
+        /// <summary>
+        /// ClassVO의 생성자 메소드입니다.
+        /// 변수들을 파라미터로 받은 변수들로 설정해줍니다.
+        /// </summary>
+        /// <param name="number">강의 번호</param>
+        /// <param name="department">개설학과전공</param>
+        /// <param name="serialNumber">학수번호</param>
+        /// <param name="divisionClassNumber">분반</param>
+        /// <param name="lectureName">강의명</param>
+        /// <param name="courseDivision">이수구분</param>
+        /// <param name="grade">학년</param>
+        /// <param name="credit">학점</param>
+        /// <param name="lectureTime">요일 및 강의시간</param>
+        /// <param name="classRoom">강의실</param>
+        /// <param name="professor">교수명</param>
+        /// <param name="lectureLanguage">강의언어</param>
         public ClassVO(int number, string department, string serialNumber, string divisionClassNumber, string lectureName, string courseDivision, int grade,
             float credit, string lectureTime, string classRoom, string professor, string lectureLanguage)
         {
@@ -123,6 +142,10 @@ namespace EnSharpPortal.Source.Data
             get { return lectureLanguage; }
         }
 
+        /// <summary>
+        /// ClassVO의 string변수들을 한 번에 출력해주는 메소드입니다.
+        /// </summary>
+        /// <returns>ClassVO의 string변수</returns>
         public override string ToString()
         {
             return "개설학과전공 : " + department + ", 학수번호 : " + serialNumber + ", 분반 : " + divisionClassNumber +
@@ -130,14 +153,21 @@ namespace EnSharpPortal.Source.Data
                  ", 교수명 : " + professor + ", 강의언어 : " + lectureLanguage;
         }
 
+        /// <summary>
+        /// 엑셀파일로부터 강의를 불러와 리스트로 만들어주는 메소드입니다.
+        /// </summary>
+        /// <param name="path">파일 경로</param>
+        /// <returns>강의 리스트</returns>
         public List<ClassVO> Load(string path)
         {
-            Array data = fileIOManager.OpenAndReadFile(path);
+            Array data = fileIOManager.OpenAndReadFile(path, "A2", "L167");
             List<ClassVO> classes = new List<ClassVO>();
 
+            // 데이터 행, 열 구함
             int rows = data.GetUpperBound(0) - data.GetLowerBound(0) + 1;
             int columns = data.GetUpperBound(1) - data.GetLowerBound(1) + 1;
             
+            // 데이터에서 값들 불러와 ClassVO에 대입, 리스트로 만듦
             for (int row = 1; row <= rows; row++)
             {
                 for (int column = 1; column <= columns; column++) if (data.GetValue(row, column) == null) data.SetValue("", row, column);

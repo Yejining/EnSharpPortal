@@ -34,6 +34,9 @@ namespace EnSharpPortal.Source.Main
             print.LogInButton();
         }
 
+        /// <summary>
+        /// 로그인하지 않고 바로 포탈 프로그램을 실행하는 메소드입니다.
+        /// </summary>
         public void RunPortalWithoutLogIn()
         {
             bool isFirstLoop = true;
@@ -58,14 +61,19 @@ namespace EnSharpPortal.Source.Main
 
                 ConsoleKeyInfo keyInfo = Console.ReadKey();
 
-                if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(5, 8, 2, '▷');
-                else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(5, 8, 10, 2, '▷');
-                else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(5, "▷"); break; }
-                else if (keyInfo.Key == ConsoleKey.Enter) { GoNextFunction((Console.CursorTop / 2) - 4); isFirstLoop = true; }
-                else print.BlockCursorMove(5, "▷");
+                if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(5, 8, 2, '▷');                     // 위로 커서 이동        
+                else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(5, 8, 10, 2, '▷');        // 아래로 커서 이동
+                else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(5, "▷"); break; }    // 나가기
+                else if (keyInfo.Key == ConsoleKey.Enter)                                                // 기능 선택
+                { GoNextFunction((Console.CursorTop / 2) - 4); isFirstLoop = true; }
+                else print.BlockCursorMove(5, "▷");                                                     // 입력 무시
             }
         }
 
+        /// <summary>
+        /// 다음 기능을 선택하는 메소드입니다.
+        /// </summary>
+        /// <param name="cursorTop">커서 위치</param>
         public void GoNextFunction(int cursorTop)
         {
             switch (cursorTop)
@@ -95,21 +103,6 @@ namespace EnSharpPortal.Source.Main
                     return;
                 case Constants.LOG_OUT:
                     return;
-            }
-        }
-
-        /// <summary>
-        /// 엔터 키를 받을 때까지 기다리는 메소드입니다.
-        /// </summary>
-        public void WaitUntilGetEnterKey()
-        {
-            ConsoleKeyInfo keyInfo;
-
-            while (true)
-            {
-                keyInfo = Console.ReadKey();
-
-                if (keyInfo.Key == ConsoleKey.Enter) return;
             }
         }
     }

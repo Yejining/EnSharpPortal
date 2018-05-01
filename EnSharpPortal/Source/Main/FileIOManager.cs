@@ -11,7 +11,14 @@ namespace EnSharpPortal.Source.Main
 {
     class FileIOManager
     {
-        public Array OpenAndReadFile(string path)
+        /// <summary>
+        /// 엑셀파일을 열고 읽는 메소드입니다.
+        /// </summary>
+        /// <param name="path">파일 경로</param>
+        /// <param name="rows">엑셀 시작점</param>
+        /// <param name="columns">엑셀 끝점</param>
+        /// <returns>저장된 엑셀 배열</returns>
+        public Array OpenAndReadFile(string path, string rows, string columns)
         {
             try
             {
@@ -28,8 +35,7 @@ namespace EnSharpPortal.Source.Main
                 Excel.Worksheet worksheet = sheets["Sheet1"] as Excel.Worksheet;
 
                 // 범위 설정
-                //Excel.Range cellRange = worksheet.get_Range(worksheet.UsedRange.Rows.Count, worksheet.UsedRange.Columns.Count) as Excel.Range;
-                Excel.Range cellRange = worksheet.get_Range("A2", "L167") as Excel.Range;
+                Excel.Range cellRange = worksheet.get_Range(rows, columns) as Excel.Range;
                 // 설정한 범위만큼 데이터 담기
                 Array data = cellRange.Cells.Value2;
                 
@@ -45,6 +51,11 @@ namespace EnSharpPortal.Source.Main
             }
         }
 
+        /// <summary>
+        /// 엑셀 파일을 작성하는 메소드입니다.
+        /// </summary>
+        /// <param name="fileName">파일 이름</param>
+        /// <param name="lecturesInExcelForm">엑셀로 저장할 데이터</param>
         public void CreateExcelFile(string fileName, string[,] lecturesInExcelForm)
         {
             string excelPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\" + fileName + ".xls";
@@ -61,10 +72,12 @@ namespace EnSharpPortal.Source.Main
                 wb = excelApp.Workbooks.Add(misValue);
                 ws = (Excel.Worksheet)wb.Worksheets.get_Item(1);
                 
+                // 정보 입력
                 for (int row = 0; row < 25; row++)
                     for (int column = 0; column < 6; column++)
                         ws.Cells[row + 1, column + 1] = lecturesInExcelForm[row, column];
                 
+                // 엑셀 파일로 저장
                 wb.SaveAs(excelPath, Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
                 wb.Close();
                 excelApp.Quit();
