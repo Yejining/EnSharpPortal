@@ -78,7 +78,7 @@ namespace EnSharpPortal.Source.Function
             print.SearchedLectureSchedule(mode, Constants.ALL, searchedLecture, department, serialNumber, lectureName, grade, professor);
             
             if (mode == Constants.LECTURE_SEARCH) { tools.WaitUntilGetEscapeKey(); return lectureSchedule; }
-            else return PutLectureInBasketOrSignUpLecture(Constants.PUT_LECTURE_IN_BASKET, searchedLecture);
+            else return PutLectureInBasketOrSignUpLecture(Constants.PUT_LECTURE_IN_BASKET, basket, searchedLecture);
         }
 
         /// <summary>
@@ -166,11 +166,11 @@ namespace EnSharpPortal.Source.Function
             if (searchMethod == Constants.BASKET)
             {
                 print.SearchedLectureSchedule(Constants.SIGN_UP_CLASS, searchMethod, basket, department, serialNumber, lectureName, grade, professor);
-                return PutLectureInBasketOrSignUpLecture(Constants.SIGN_UP_CLASS, basket);
+                return PutLectureInBasketOrSignUpLecture(Constants.SIGN_UP_CLASS, enrolledLecture, basket);
             }
             
             print.SearchedLectureSchedule(Constants.SIGN_UP_CLASS, searchMethod, searchedLecture, department, serialNumber, lectureName, grade, professor);
-            return PutLectureInBasketOrSignUpLecture(Constants.SIGN_UP_CLASS, searchedLecture);
+            return PutLectureInBasketOrSignUpLecture(Constants.SIGN_UP_CLASS, enrolledLecture, searchedLecture);
         }
 
         /// <summary>
@@ -179,9 +179,8 @@ namespace EnSharpPortal.Source.Function
         /// <param name="mode">관심과목 담기 혹은 수강신청</param>
         /// <param name="searchedLecture">검색된 강의</param>
         /// <returns>관심과목으로 지정된 강의 혹은 수강신청된 강의 목록</returns>
-        public List<ClassVO> PutLectureInBasketOrSignUpLecture(int mode, List<ClassVO> searchedLecture)
+        public List<ClassVO> PutLectureInBasketOrSignUpLecture(int mode, List<ClassVO> savedLecture,  List<ClassVO> searchedLecture)
         {
-            List<ClassVO> selectedLecture = new List<ClassVO>();
             int cursorTop;
 
             if (mode != Constants.SIGN_UP_CLASS) cursorTop = 12;
@@ -189,7 +188,9 @@ namespace EnSharpPortal.Source.Function
 
             Console.SetCursorPosition(2, cursorTop);
             Console.Write('▷');
-            
+            if (!tools.IsValidLecture(searchedLecture[0], savedLecture, mode))
+                print.NonAvailableLectureMark(1, Console.CursorTop);
+
             // 방향키 및 엔터, ESC키를 이용해 기능 수행
             while (true)
             {
@@ -197,19 +198,19 @@ namespace EnSharpPortal.Source.Function
                 
                 if (keyInfo.Key == ConsoleKey.UpArrow) tools.UpArrow(2, cursorTop, searchedLecture.Count, 1, '▷');                                 // 위로 커서 옮김
                 else if (keyInfo.Key == ConsoleKey.DownArrow) tools.DownArrow(2, cursorTop, searchedLecture.Count, 1, '▷'); // 밑으로 커서 옮김
-                else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(2, "▷"); return selectedLecture; }       // 나가기
+                else if (keyInfo.Key == ConsoleKey.Escape) { print.BlockCursorMove(2, "▷"); return savedLecture; }       // 나가기
                 else if (keyInfo.Key == ConsoleKey.Enter)                                                                    // 해당 강의 선택
                 {
-                    if (tools.IsValidLecture(searchedLecture[Console.CursorTop - cursorTop], selectedLecture, mode))         // - 강의 선택 성공
+                    if (tools.IsValidLecture(searchedLecture[Console.CursorTop - cursorTop], savedLecture, mode))         // - 강의 선택 성공
                     {
-                        selectedLecture.Add(searchedLecture[Console.CursorTop - cursorTop]);
+                        savedLecture.Add(searchedLecture[Console.CursorTop - cursorTop]);
                         print.CompletePutOrDeleteLectureInBasket(1, Console.CursorTop, Constants.PUT);
                     }
                     else print.CompletePutOrDeleteLectureInBasket(1, Console.CursorTop, Constants.FAIL);                     // - 강의 선택 실패
                 }
                 else print.BlockCursorMove(2, "▷");
 
-                if (!tools.IsValidLecture(searchedLecture[Console.CursorTop - cursorTop], selectedLecture, mode))            // 입력 무시 
+                if (!tools.IsValidLecture(searchedLecture[Console.CursorTop - cursorTop], savedLecture, mode))            // 입력 무시 
                     print.NonAvailableLectureMark(1, Console.CursorTop);
             }
         }
