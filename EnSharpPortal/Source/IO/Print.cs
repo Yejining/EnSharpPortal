@@ -607,14 +607,14 @@ namespace EnSharpPortal.Source.IO
         /// </summary>
         public void Template()
         {
-            Console.SetWindowSize(160, 35);
+            Console.SetWindowSize(115, 35);
             Console.Clear();
 
-            Console.SetCursorPosition(120, 2);
+            Console.SetCursorPosition(75, 2);
             foreach (string title in Constants.ENSHARP_TITLE_IN_SEARCH_MODE)
             {
                 Console.WriteLine(title);
-                Console.SetCursorPosition(120, Console.CursorTop);
+                Console.SetCursorPosition(75, Console.CursorTop);
             }
 
             Console.SetCursorPosition(7, 3);
@@ -642,6 +642,7 @@ namespace EnSharpPortal.Source.IO
             }
 
             Console.ForegroundColor = ConsoleColor.Gray;
+            PrintSentence("나가기(ESC)");
         }
 
         /// <summary>
